@@ -65,4 +65,14 @@ public class Graph {
     public void removeEdge(int i1, int i2) throws InvalidOperationException {
         removeEdges(i1, i2, 1);
     }
+
+    public void addNode() {
+        for(int i = nb; i <= data.size(); i += nb + 1) {
+            data.add(i, 0);
+        }
+        nb++;
+        for(int i = 0; i < nb; i++) {
+            data.add(0);
+        }
+    }
 }
