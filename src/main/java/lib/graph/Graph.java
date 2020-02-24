@@ -28,6 +28,10 @@ public class Graph {
     public Graph(int n) {
         nb = n;
         data = new ArrayList<Integer>(n * n);
+
+        for(int i = 0; i < n * n; i++) {
+            data.add(0);
+        }
     }
 
     public int nbVertices() {
