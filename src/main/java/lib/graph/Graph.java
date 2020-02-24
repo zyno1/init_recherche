@@ -66,7 +66,7 @@ public class Graph {
         removeEdges(i1, i2, 1);
     }
 
-    public void addNode() {
+    public int addNode() {
         for(int i = nb; i <= data.size(); i += nb + 1) {
             data.add(i, 0);
         }
@@ -74,5 +74,21 @@ public class Graph {
         for(int i = 0; i < nb; i++) {
             data.add(0);
         }
+        return nb - 1;
+    }
+
+    public void flowEquivalence(int i) {
+        int i2 = addNode();
+        for(int j = 0; j < nb; j++) {
+            int count = getEdgeCount(i, j);
+            addEdges(i2, j, count);
+
+            try {
+                removeEdges(i, j, count);
+            } catch (InvalidOperationException e) {
+                e.printStackTrace();
+            }
+        }
+        addEdge(i, i2);
     }
 }

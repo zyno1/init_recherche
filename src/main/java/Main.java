@@ -23,8 +23,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         System.out.println("hello");
         Graph g = GraphIO.loadFromFile("tests/g0.txt");
-        g.addNode();
+        g.flowEquivalence(2);
         GraphIO.writeToFile(g, "g.txt");
-        //GraphIO.writeToDotFile(g, "dot.dot");
+        GraphIO.writeToDotFile(g, "dot.dot");
     }
 }
