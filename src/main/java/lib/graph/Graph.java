@@ -18,13 +18,16 @@ package lib.graph;
 
 import lib.exceptions.InvalidOperationException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Graph {
-    private int[] data;
+    private List<Integer> data;
     private int nb;
 
     public Graph(int n) {
         nb = n;
-        data = new int[n * n];
+        data = new ArrayList<Integer>(n * n);
     }
 
     public int nbVertices() {
@@ -32,7 +35,7 @@ public class Graph {
     }
 
     public int getEdgeCount(int i1, int i2) {
-        return data[i1 * nb + i2];
+        return data.get(i1 * nb + i2);
     }
 
     public boolean hasEdge(int i1, int i2) {
@@ -40,7 +43,8 @@ public class Graph {
     }
 
     public void addEdges(int i1, int i2, int n) {
-        data[i1 * nb + i2] += n;
+        int old = data.get(i1 * nb + i2);
+        data.set(i1 * nb + i2, old + n);
     }
 
     public void addEdge(int i1, int i2) {
@@ -51,7 +55,7 @@ public class Graph {
         if(getEdgeCount(i1, i2) < n) {
             throw new InvalidOperationException();
         }
-        data[i1 * nb + i2] -= n;
+        addEdges(i1, i2, -1 * n);
     }
 
     public void removeEdge(int i1, int i2) throws InvalidOperationException {
