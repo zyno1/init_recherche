@@ -19,10 +19,9 @@ package lib.graph;
 import lib.exceptions.InvalidOperationException;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Graph {
-    private List<Integer> data;
+    private ArrayList<Integer> data;
     private int nb;
 
     public Graph(int n) {
@@ -51,8 +50,8 @@ public class Graph {
     }
 
     public void addEdges(int i1, int i2, int n) {
-        int old = data.get(i1 * nb + i2);
-        data.set(i1 * nb + i2, old + n);
+        int old = getEdgeCount(i1, i2);
+        setEdgeCount(i1, i2, old + n);
     }
 
     public void addEdge(int i1, int i2) {
@@ -71,6 +70,7 @@ public class Graph {
     }
 
     public int addNode() {
+        data.ensureCapacity((nb + 1) * (nb + 1));
         for(int i = nb; i <= data.size(); i += nb + 1) {
             data.add(i, 0);
         }
