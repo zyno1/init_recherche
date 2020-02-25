@@ -151,4 +151,56 @@ public class Graph {
 
         return res;
     }
+
+    public void splitOnEntries(int i, int... split) {
+        int i2 = addNode();
+
+        for(int j = 0; j < nb; j++) {
+            setEdgeCount(i2, j, getEdgeCount(i, j));
+        }
+
+        for(int j = 0; j < nb; j++) {
+            int count = getEdgeCount(j, i);
+            int s = 0;
+            if(split.length > j) {
+                s = split[j];
+            }
+
+            if(s > count) {
+                s = count;
+            }
+
+            int c1 = count - s;
+            int c2 = s;
+
+            setEdgeCount(j, i, c1);
+            setEdgeCount(j, i2, c2);
+        }
+    }
+
+    public void splitOnExits(int i, int... split) {
+        int i2 = addNode();
+
+        for(int j = 0; j < nb; j++) {
+            setEdgeCount(j, i2, getEdgeCount(j, i));
+        }
+
+        for(int j = 0; j < nb; j++) {
+            int count = getEdgeCount(i, j);
+            int s = 0;
+            if(split.length > j) {
+                s = split[j];
+            }
+
+            if(s > count) {
+                s = count;
+            }
+
+            int c1 = count - s;
+            int c2 = s;
+
+            setEdgeCount(i, j, c1);
+            setEdgeCount(i2, j, c2);
+        }
+    }
 }
