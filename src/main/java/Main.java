@@ -22,12 +22,11 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        System.out.println("hello");
-        Graph g = GraphIO.loadFromFile("tests/g0.txt");
-        int i = g.flowEquivalence(1);
-        g.flowEquivalence(1, i);
+        Graph g = GraphIO.loadFromFile("tests/g1.txt");
+        //int i = g.flowEquivalence(1);
+        g.flowEquivalence(0, 1);
         //g.removeNode(2);
         GraphIO.writeToFile(g, "g.txt");
-        //GraphIO.writeToDotFile(g, "dot.dot");
+        GraphIO.writeToDotFile(g, "dot.dot");
     }
 }
