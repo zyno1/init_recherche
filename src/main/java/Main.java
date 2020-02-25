@@ -14,17 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import lib.exceptions.InvalidOperationException;
 import lib.graph.Graph;
 import lib.graph.GraphIO;
 
 import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InvalidOperationException {
         System.out.println("hello");
         Graph g = GraphIO.loadFromFile("tests/g0.txt");
-        g.flowEquivalence(2);
+        int i = g.flowEquivalence(1);
+        g.flowEquivalence(1, i);
+        //g.removeNode(2);
         GraphIO.writeToFile(g, "g.txt");
-        GraphIO.writeToDotFile(g, "dot.dot");
+        //GraphIO.writeToDotFile(g, "dot.dot");
     }
 }

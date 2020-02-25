@@ -42,6 +42,10 @@ public class Graph {
         return data.get(i1 * nb + i2);
     }
 
+    public void setEdgeCount(int i1, int i2, int n) {
+        data.set(i1 * nb + i2, n);
+    }
+
     public boolean hasEdge(int i1, int i2) {
         return getEdgeCount(i1, i2) != 0;
     }
@@ -77,7 +81,17 @@ public class Graph {
         return nb - 1;
     }
 
-    public void flowEquivalence(int i) {
+    public void removeNode(int i) {
+        for(int j = 0; j < nb; j++) {
+            data.remove(i * nb);
+        }
+        for(int j = i; j < data.size(); j += nb - 1) {
+            data.remove(j);
+        }
+        nb--;
+    }
+
+    public int flowEquivalence(int i) {
         int i2 = addNode();
         for(int j = 0; j < nb; j++) {
             int count = getEdgeCount(i, j);
@@ -90,5 +104,31 @@ public class Graph {
             }
         }
         addEdge(i, i2);
+        return i2;
+    }
+
+    public void flowEquivalence(int i1, int i2) throws InvalidOperationException {
+        //verify i1 exits
+        for(int j = 0; j < nb; j++) {
+            int count = getEdgeCount(i1, j);
+
+            if( ! ((j == i2 && count == 1) || count == 0)) {
+                throw new InvalidOperationException();
+            }
+        }
+
+        //verify i2 entries
+        for(int j = 0; j < nb; j++) {
+            int count = getEdgeCount(j, i2);
+
+            if( ! ((j == i1 && count == 1) || count == 0)) {
+                throw new InvalidOperationException();
+            }
+        }
+
+        for(int j = 0; j < nb; j++) {
+            setEdgeCount(i1, j, getEdgeCount(i2, j));
+        }
+        removeNode(i2);
     }
 }
