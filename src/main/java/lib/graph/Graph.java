@@ -152,7 +152,7 @@ public class Graph {
         return res;
     }
 
-    public void splitOnEntries(int i, int... split) {
+    public int splitEntries(int i, int... split) {
         int i2 = addNode();
 
         for(int j = 0; j < nb; j++) {
@@ -176,9 +176,10 @@ public class Graph {
             setEdgeCount(j, i, c1);
             setEdgeCount(j, i2, c2);
         }
+        return i2;
     }
 
-    public void splitOnExits(int i, int... split) {
+    public int splitExits(int i, int... split) {
         int i2 = addNode();
 
         for(int j = 0; j < nb; j++) {
@@ -202,5 +203,50 @@ public class Graph {
             setEdgeCount(i, j, c1);
             setEdgeCount(i2, j, c2);
         }
+        return i2;
+    }
+
+    public void mergeEntries(int i1, int i2) throws InvalidOperationException {
+        if(i1 > i2) {
+            int tmp = i1;
+            i1 = i2;
+            i2 = tmp;
+        }
+
+        for(int j = 0; j < nb; j++) {
+            if(getEdgeCount(i1, j) != getEdgeCount(i2, j)) {
+                throw new InvalidOperationException();
+            }
+        }
+
+        for(int j = 0; j < nb; j++) {
+            int c1 = getEdgeCount(j, i1);
+            int c2 = getEdgeCount(j, i2);
+
+            setEdgeCount(j, i1, c1 + c2);
+        }
+        removeNode(i2);
+    }
+
+    public void mergeExits(int i1, int i2) throws InvalidOperationException {
+        if(i1 > i2) {
+            int tmp = i1;
+            i1 = i2;
+            i2 = tmp;
+        }
+
+        for(int j = 0; j < nb; j++) {
+            if(getEdgeCount(j, i1) != getEdgeCount(j, i2)) {
+                throw new InvalidOperationException();
+            }
+        }
+
+        for(int j = 0; j < nb; j++) {
+            int c1 = getEdgeCount(i1, j);
+            int c2 = getEdgeCount(i2, j);
+
+            setEdgeCount(i1, j, c1 + c2);
+        }
+        removeNode(i2);
     }
 }
