@@ -19,14 +19,13 @@ import lib.graph.Graph;
 import lib.graph.GraphIO;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g1.txt");
-        //int i = g.flowEquivalence(1);
-        g.flowEquivalence(0, 1);
-        //g.removeNode(2);
-        GraphIO.writeToFile(g, "g.txt");
-        GraphIO.writeToDotFile(g, "dot.dot");
+        Graph g = GraphIO.loadFromFile("tests/g0.txt");
+
+        System.out.println(Arrays.toString(g.getEntries(2)));
+        System.out.println(Arrays.toString(g.getExits(0)));
     }
 }

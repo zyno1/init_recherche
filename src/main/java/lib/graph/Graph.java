@@ -131,4 +131,24 @@ public class Graph {
         }
         removeNode(i2);
     }
+
+    public int[] getExits(int i) {
+        int[] res = new int[nb];
+
+        for(int j = 0; j < nb; j++) {
+            res[j] = getEdgeCount(i, j);
+        }
+
+        return res;
+    }
+
+    public int[] getEntries(int i) {
+        int [] res = new int[nb];
+
+        for(int j = 0; j < nb; j++) {
+            res[j] = getEdgeCount(j, i);
+        }
+
+        return res;
+    }
 }
