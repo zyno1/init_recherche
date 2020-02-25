@@ -23,11 +23,18 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g0.txt");
+        Graph g = GraphIO.loadFromFile("tests/g2.txt");
 
-        int i2 = g.splitEntries(0, 1, 1, 1);
-        g.mergeEntries(0, i2);
+        int p0 = g.splitExits(0, 0, 1);
+        GraphIO.writeToFile(g, "r1.txt");
 
-        GraphIO.writeToDotFile(g, "dot.dot");
+        int p1 = g.splitEntries(1, 0, 0, 0, 0, 1);
+        GraphIO.writeToFile(g, "r2.txt");
+
+        g.flowEquivalence(p0, p1);
+        GraphIO.writeToFile(g, "r3.txt");
+
+        g.mergeExits(0, p0);
+        GraphIO.writeToFile(g, "r4.txt");
     }
 }
