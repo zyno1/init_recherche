@@ -25,7 +25,7 @@ public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
         Graph g = GraphIO.loadFromFile("tests/g0.txt");
 
-        g.splitOnExits(1, 1, 0, 1);
+        g.splitOnEntries(2, 1, 0, 1);
 
         GraphIO.writeToDotFile(g, "dot.dot");
     }

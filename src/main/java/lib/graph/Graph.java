@@ -162,7 +162,7 @@ public class Graph {
         for(int j = 0; j < nb; j++) {
             int count = getEdgeCount(j, i);
             int s = 0;
-            if(split.length > j) {
+            if(split.length > j && j != i) {
                 s = split[j];
             }
 
@@ -188,7 +188,7 @@ public class Graph {
         for(int j = 0; j < nb; j++) {
             int count = getEdgeCount(i, j);
             int s = 0;
-            if(split.length > j) {
+            if(split.length > j && j != i) {
                 s = split[j];
             }
 
