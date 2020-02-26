@@ -24,17 +24,22 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
         Graph g = GraphIO.loadFromFile("tests/g2.txt");
+        GraphIO.printGraph(g);
 
         int p0 = g.splitExits(0, 0, 1);
         GraphIO.writeToFile(g, "r1.txt");
+        GraphIO.printGraph(g);
 
         int p1 = g.splitEntries(1, 0, 0, 0, 0, 1);
         GraphIO.writeToFile(g, "r2.txt");
+        GraphIO.printGraph(g);
 
         g.flowEquivalence(p0, p1);
         GraphIO.writeToFile(g, "r3.txt");
+        GraphIO.printGraph(g);
 
         g.mergeExits(0, p0);
         GraphIO.writeToFile(g, "r4.txt");
+        GraphIO.printGraph(g);
     }
 }
