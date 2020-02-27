@@ -19,22 +19,25 @@ import lib.graph.Graph;
 import lib.graph.GraphIO;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g2.txt");
+        Graph g = GraphIO.loadFromFile("tests/g3.txt");
+        GraphIO.writeToDotFile(g, "r0.dot");
 
-        int p0 = g.splitExits(0, 0, 1);
-        GraphIO.writeToFile(g, "r1.txt");
+        int f0 = g.flowEquivalence(0);
+        GraphIO.writeToDotFile(g, "r1.dot");
 
-        int p1 = g.splitEntries(1, 0, 0, 0, 0, 1);
-        GraphIO.writeToFile(g, "r2.txt");
+        int sf0 = g.splitExits(f0, 0, 0, 0, 0, 1, 0, 0);
+        GraphIO.writeToDotFile(g, "r2.dot");
 
-        g.flowEquivalence(p0, p1);
-        GraphIO.writeToFile(g, "r3.txt");
+        int fsf0 = g.flowEquivalence(sf0);
+        GraphIO.writeToDotFile(g, "r3.dot");
 
-        g.mergeExits(0, p0);
-        GraphIO.writeToFile(g, "r4.txt");
+        g.mergeExits(f0, sf0);
+        GraphIO.writeToDotFile(g, "r4.dot");
+
+        g.flowEquivalence(0, f0);
+        GraphIO.writeToDotFile(g, "r5.dot");
     }
 }
