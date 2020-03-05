@@ -12,6 +12,12 @@ public class GraphBWIO {
 
         out.write("digraph name {\n");
 
+        for(int i = 0; i < g.nbVertices(); i++) {
+            if(GraphBW.sum(g.getExits(i)) > 1) {
+                out.write(i + " [style=filled fontcolor=\"white\" fillcolor=\"black\"];\n");
+            }
+        }
+
         for(int j = 0; j < g.nbVertices(); j++) {
             for(int i = 0; i < g.nbVertices(); i++) {
                 for(int k = 0; k < g.getEdgeCount(j, i); k++) {

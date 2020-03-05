@@ -16,28 +16,18 @@ limitations under the License.
 
 import lib.exceptions.InvalidOperationException;
 import lib.graph.Graph;
+import lib.graph.GraphBW;
+import lib.graph.io.GraphBWIO;
 import lib.graph.io.GraphIO;
 
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g3.txt");
-        GraphIO.writeToDotFile(g, "r0.dot");
+        Graph g = GraphIO.loadFromFile("tests/g2.txt");
+        GraphBW gbw = GraphBW.fromGraph(g);
 
-        int f0 = g.flowEquivalence(0);
-        GraphIO.writeToDotFile(g, "r1.dot");
-
-        int sf0 = g.splitExits(f0, 0, 0, 0, 0, 1, 0, 0);
-        GraphIO.writeToDotFile(g, "r2.dot");
-
-        int fsf0 = g.flowEquivalence(sf0);
-        GraphIO.writeToDotFile(g, "r3.dot");
-
-        g.mergeExits(f0, sf0);
-        GraphIO.writeToDotFile(g, "r4.dot");
-
-        g.flowEquivalence(0, f0);
-        GraphIO.writeToDotFile(g, "r5.dot");
+        GraphIO.writeToDotFile(g, "g.dot");
+        GraphBWIO.writeToDotFile(gbw, "gbw.dot");
     }
 }
