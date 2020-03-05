@@ -21,8 +21,8 @@ import lib.exceptions.InvalidOperationException;
 import java.util.ArrayList;
 
 public class Graph {
-    private ArrayList<Integer> data;
-    private int nb;
+    ArrayList<Integer> data;
+    int nb;
 
     public Graph(int n) {
         nb = n;
@@ -248,5 +248,17 @@ public class Graph {
             setEdgeCount(i1, j, c1 + c2);
         }
         removeNode(i2);
+    }
+
+    public Graph clone() {
+        Graph g = new Graph(nbVertices());
+
+        for(int j = 0; j < nbVertices(); j++) {
+            for(int i = 0; i < nbVertices(); i++) {
+                g.setEdgeCount(j, i, getEdgeCount(j, i));
+            }
+        }
+
+        return g;
     }
 }

@@ -5,8 +5,8 @@ import lib.exceptions.InvalidOperationException;
 import java.util.ArrayList;
 
 public class GraphBW {
-    private ArrayList<Integer> data;
-    private int nb;
+    ArrayList<Integer> data;
+    int nb;
 
     public GraphBW(int n) {
         nb = n;
@@ -15,6 +15,26 @@ public class GraphBW {
         for(int i = 0; i < n * n; i++) {
             data.add(0);
         }
+    }
+
+    public static GraphBW fromGraph(Graph g) {
+        return fromGraphUnsafe(g.clone());
+    }
+
+    public static GraphBW fromGraphUnsafe(Graph g) {
+        int n = g.nbVertices();
+
+        for(int i = 0; i < n; i++) {
+            if(sum(g.getEntries(i)) > 1 && sum(g.getExits(i)) > 1) {
+                g.flowEquivalence(i);
+            }
+        }
+
+        GraphBW res = new GraphBW(0);
+        res.data = g.data;
+        res.nb = g.nb;
+
+        return res;
     }
 
     public int nbVertices() {
@@ -41,7 +61,7 @@ public class GraphBW {
         data.set(i1 * nb + i2, n);
     }
 
-    private int sum(int... n) {
+    public static int sum(int... n) {
         int res = 0;
         for(int i : n) {
             res += i;
