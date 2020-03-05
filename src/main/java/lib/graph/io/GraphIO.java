@@ -14,7 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package lib.graph;
+package lib.graph.io;
+
+import lib.graph.Graph;
 
 import java.io.*;
 

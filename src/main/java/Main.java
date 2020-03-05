@@ -16,7 +16,7 @@ limitations under the License.
 
 import lib.exceptions.InvalidOperationException;
 import lib.graph.Graph;
-import lib.graph.GraphIO;
+import lib.graph.io.GraphIO;
 
 import java.io.IOException;
 
