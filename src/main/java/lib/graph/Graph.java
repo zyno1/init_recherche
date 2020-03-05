@@ -20,7 +20,7 @@ import lib.exceptions.InvalidOperationException;
 
 import java.util.ArrayList;
 
-public class Graph {
+public class Graph implements IGraph {
     ArrayList<Integer> data;
     int nb;
 

@@ -17,6 +17,7 @@ limitations under the License.
 package lib.graph.io;
 
 import lib.graph.Graph;
+import lib.graph.IGraph;
 
 import java.io.*;
 
@@ -51,7 +52,7 @@ public class GraphIO {
         return res;
     }
 
-    public static void writeToFile(Graph g, String path) throws IOException {
+    public static void writeToFile(IGraph g, String path) throws IOException {
         BufferedWriter out = new BufferedWriter(new FileWriter(path));
 
         for(int j = 0; j < g.nbVertices(); j++) {
@@ -70,7 +71,7 @@ public class GraphIO {
         out.close();
     }
 
-    public static void writeToDotFile(Graph g, String path) throws IOException {
+    public static void writeToDotFile(IGraph g, String path) throws IOException {
         BufferedWriter out = new BufferedWriter(new FileWriter(path));
 
         out.write("digraph name {\n");
@@ -114,7 +115,7 @@ public class GraphIO {
         return str.toString();
     }
 
-    public static void printGraph(Graph g) {
+    public static void printGraph(IGraph g) {
         int maxValue = g.nbVertices() - 1;
 
         for(int j = 0; j < g.nbVertices(); j++) {

@@ -4,7 +4,7 @@ import lib.exceptions.InvalidOperationException;
 
 import java.util.ArrayList;
 
-public class GraphBW {
+public class GraphBW implements IGraph {
     ArrayList<Integer> data;
     int nb;
 
