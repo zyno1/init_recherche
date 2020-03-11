@@ -29,7 +29,7 @@ public class Main {
 
         GraphBWIO.writeToDotFile(gbw, "init.dot");
 
-        gbw.split(2, 1, 1);
+        gbw.addNodeOnEdge(0, 2);
 
         //GraphIO.writeToDotFile(g, "g.dot");
         GraphBWIO.writeToDotFile(gbw, "r1.dot");

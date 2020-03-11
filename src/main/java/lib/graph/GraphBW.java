@@ -140,7 +140,7 @@ public class GraphBW implements IGraph {
         return res;
     }
 
-    public void split(int i1, int... split) throws InvalidOperationException {
+    public int split(int i1, int... split) throws InvalidOperationException {
         int[] entries = getEntries(i1);
         //int[] exits = getExits(i);
         int i2 = addNode();
@@ -187,5 +187,22 @@ public class GraphBW implements IGraph {
                 setEdgeCount(j, i2, k2);
             }
         }
+        return i2;
+    }
+
+    public int addNodeOnEdge(int i1, int i2) throws InvalidOperationException {
+        int nb = getEdgeCount(i1, i2);
+        if(nb < 1) {
+            throw new InvalidOperationException();
+        }
+
+        int i3 = addNode();
+
+        setEdgeCount(i1, i2, nb - 1);
+
+        addEdges(i1, i3, 1);
+        addEdges(i3, i2, 1);
+
+        return i3;
     }
 }
