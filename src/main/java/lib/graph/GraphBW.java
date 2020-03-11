@@ -77,6 +77,19 @@ public class GraphBW implements IGraph {
         data.set(i1 * nb + i2, n);
     }
 
+    public void addEdges(int i1, int i2, int n) throws InvalidOperationException {
+        int k = getEdgeCount(i1, i2) + n;
+        setEdgeCount(i1, i2, k);
+    }
+
+    public void removeEdges(int i1, int i2, int n) throws InvalidOperationException {
+        int k = getEdgeCount(i1, i2) - n;
+        if(k < 0) {
+            throw new InvalidOperationException();
+        }
+        setEdgeCount(i1, i2, k);
+    }
+
     public static int sum(int... n) {
         int res = 0;
         for(int i : n) {
