@@ -139,4 +139,53 @@ public class GraphBW implements IGraph {
 
         return res;
     }
+
+    public void split(int i1, int... split) throws InvalidOperationException {
+        int[] entries = getEntries(i1);
+        //int[] exits = getExits(i);
+        int i2 = addNode();
+
+        if(sum(entries) <= 1) {
+            addEdges(i1, i2, 1);
+            for(int j = 0; j < nbVertices(); j++) {
+                int tmp = getEdgeCount(i1, j);
+
+                int s = 0;
+                if(split.length > j) {
+                    s = split[j];
+                }
+
+                if(s < 0) {
+                    throw new InvalidOperationException();
+                }
+
+                int k1 = Math.max(0, getEdgeCount(i1, j) - s);
+                int k2 = Math.min(tmp, s);
+
+                setEdgeCount(i1, j, k1);
+                setEdgeCount(i2, j, k2);
+            }
+        }
+        else {
+            addEdges(i2, i1, 1);
+            for(int j = 0; j < nbVertices(); j++) {
+                int tmp = getEdgeCount(j, i1);
+
+                int s = 0;
+                if(split.length > j) {
+                    s = split[j];
+                }
+
+                if(s < 0) {
+                    throw new InvalidOperationException();
+                }
+
+                int k1 = Math.max(0, getEdgeCount(j, i1) - s);
+                int k2 = Math.min(tmp, s);
+
+                setEdgeCount(j, i1, k1);
+                setEdgeCount(j, i2, k2);
+            }
+        }
+    }
 }

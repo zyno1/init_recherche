@@ -24,13 +24,14 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g2.txt");
-        GraphBW gbw = GraphBWIO.loadFromFile("tests/g2.txt");
+        Graph g = GraphIO.loadFromFile("tests/g0.txt");
+        GraphBW gbw = GraphBWIO.loadFromFile("tests/g0.txt");
 
-        GraphIO.writeToDotFile(g, "g.dot");
-        GraphBWIO.writeToDotFile(gbw, "gbw.dot");
+        GraphBWIO.writeToDotFile(gbw, "init.dot");
 
-        GraphBWIO.printGraph(gbw);
-        GraphBWIO.writeToFile(gbw, "res.txt");
+        gbw.split(2, 1, 1);
+
+        //GraphIO.writeToDotFile(g, "g.dot");
+        GraphBWIO.writeToDotFile(gbw, "r1.dot");
     }
 }
