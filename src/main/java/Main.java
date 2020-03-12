@@ -34,5 +34,12 @@ public class Main {
 
         //GraphIO.writeToDotFile(g, "r1.dot");
         GraphBWIO.writeToDotFile(gbw, "r1.dot");
+
+        int[] entry = {4, 5, 6};
+        int[] exit = {7, 8, 9};
+
+        gbw.r3(entry, exit);
+        GraphBWIO.writeToDotFile(gbw, "r2.dot");
+        GraphBWIO.writeToFile(gbw, "g4.txt");
     }
 }

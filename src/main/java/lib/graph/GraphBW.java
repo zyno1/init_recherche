@@ -18,7 +18,9 @@ package lib.graph;
 
 import lib.exceptions.InvalidOperationException;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GraphBW implements IGraph {
     ArrayList<Integer> data;
@@ -260,7 +262,6 @@ public class GraphBW implements IGraph {
                 addEdges(t, j, 1);
                 exit++;
                 n--;
-                System.out.println(t + " -> " + j);
             }
             setEdgeCount(i2, j, 0);
         }
@@ -273,9 +274,6 @@ public class GraphBW implements IGraph {
             }
         }
 
-        System.out.println(i1);
-        System.out.println(i2);
-
         if(i1 > i2) {
             removeNode(i1);
             removeNode(i2);
@@ -283,6 +281,89 @@ public class GraphBW implements IGraph {
         else {
             removeNode(i2);
             removeNode(i1);
+        }
+    }
+
+    private boolean contains(int i, int... l) {
+        for(int j = 0; j < l.length; j++) {
+            if(l[j] == i) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void r3(int[] entry, int[] exit) throws InvalidOperationException {
+        for(int ei = 0; ei < nbVertices(); ei++) {
+            for(int xi = 0; xi < nbVertices(); xi++) {
+                int n = getEdgeCount(ei, xi);
+
+                boolean cei = contains(ei, entry);
+                boolean cxi = contains(xi, exit);
+
+                if( (cxi && cei) && n != 1) {
+                    throw new InvalidOperationException();
+                }
+                if( getEdgeCount(ei, xi) != 0 && ((cxi && !cei) || (!cxi && cei))) {
+                    throw new InvalidOperationException();
+                }
+            }
+        }
+
+        for(int ei : entry) {
+            if(sum(getEntries(ei)) != 1) {
+                throw new InvalidOperationException();
+            }
+        }
+        for(int xi : exit) {
+            if(sum(getExits(xi)) != 1) {
+                throw new InvalidOperationException();
+            }
+        }
+
+        int i1 = addNode();
+        int i2 = addNode();
+        setEdgeCount(i1, i2, 1);
+
+        for(int ei : entry) {
+            for(int j = 0; j < nbVertices(); j++) {
+                int n = getEdgeCount(j, ei);
+                setEdgeCount(j, ei, 0);
+                addEdges(j, i1, n);
+            }
+        }
+
+        for(int xi : exit) {
+            for(int j = 0; j < nbVertices(); j++) {
+                int n = getEdgeCount(xi, j);
+                setEdgeCount(xi, j, 0);
+                addEdges(i2, j, n);
+            }
+        }
+
+        Arrays.sort(entry);
+        Arrays.sort(exit);
+
+        int i = entry.length - 1;
+        int j = exit.length - 1;
+
+        while (i >= 0 || j >= 0) {
+            if(i >= 0) {
+                if(j >= 0) {
+                    if(entry[i] > exit[j]) {
+                        removeNode(entry[i--]);
+                    }
+                    else {
+                        removeNode(exit[j--]);
+                    }
+                }
+                else {
+                    removeNode(entry[i--]);
+                }
+            }
+            else {
+                removeNode(exit[j--]);
+            }
         }
     }
 }
