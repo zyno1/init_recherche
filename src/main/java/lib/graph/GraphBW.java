@@ -229,4 +229,60 @@ public class GraphBW implements IGraph {
         addEdges(i1, i2, 1);
         removeNode(i);
     }
+
+    public void r3(final int i1, final int i2) throws InvalidOperationException {
+        int[] i1exit = getExits(i1);
+        int[] i2entries = getEntries(i2);
+
+        if(sum(i1exit) != 1 || sum(i2entries) != 1 || getEdgeCount(i1, i2) != 1) {
+            throw new InvalidOperationException();
+        }
+
+        int first = nbVertices();
+        int entry = 0;
+        int exit = 0;
+
+        for(int j = 0; j < nbVertices(); j++) {
+            int n = getEdgeCount(j, i1);
+            while (n > 0) {
+                int t = addNode();
+                addEdges(j, t, 1);
+                entry++;
+                n--;
+            }
+            setEdgeCount(j, i1, 0);
+        }
+
+        for(int j = 0; j < nbVertices(); j++) {
+            int n = getEdgeCount(i2, j);
+            while (n > 0) {
+                int t = addNode();
+                addEdges(t, j, 1);
+                exit++;
+                n--;
+                System.out.println(t + " -> " + j);
+            }
+            setEdgeCount(i2, j, 0);
+        }
+
+
+
+        for(int i = 0; i < entry; i++) {
+            for(int j = 0; j < exit; j++) {
+                addEdges(i + first, j + first + entry, 1);
+            }
+        }
+
+        System.out.println(i1);
+        System.out.println(i2);
+
+        if(i1 > i2) {
+            removeNode(i1);
+            removeNode(i2);
+        }
+        else {
+            removeNode(i2);
+            removeNode(i1);
+        }
+    }
 }
