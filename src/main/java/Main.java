@@ -29,7 +29,8 @@ public class Main {
 
         GraphBWIO.writeToDotFile(gbw, "init.dot");
 
-        gbw.addNodeOnEdge(0, 2);
+        //int i = gbw.addNodeOnEdge(0, 2);
+        //gbw.removeNodeOnEdge(1);
 
         //GraphIO.writeToDotFile(g, "g.dot");
         GraphBWIO.writeToDotFile(gbw, "r1.dot");

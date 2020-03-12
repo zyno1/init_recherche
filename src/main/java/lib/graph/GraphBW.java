@@ -205,4 +205,28 @@ public class GraphBW implements IGraph {
 
         return i3;
     }
+
+    public void removeNodeOnEdge(int i) throws InvalidOperationException {
+        int[] entries = getEntries(i);
+        int[] exits = getExits(i);
+
+        if(sum(entries) != 1 || sum(exits) != 1) {
+            throw new InvalidOperationException();
+        }
+
+        int i1 = -1;
+        int i2 = -1;
+
+        for(int j = 0; j < nbVertices(); j++) {
+            if(entries[j] != 0) {
+                i1 = j;
+            }
+            if(exits[j] != 0) {
+                i2 = j;
+            }
+        }
+
+        addEdges(i1, i2, 1);
+        removeNode(i);
+    }
 }
