@@ -261,4 +261,36 @@ public class Graph implements IGraph {
 
         return g;
     }
+
+    public void addLines(int i1, int i2) throws InvalidOperationException {
+        int[] i1exit = getExits(i1);
+
+        if(i1exit[i2] < 1) {
+            throw new InvalidOperationException();
+        }
+
+        for(int j = 0; j < nbVertices(); j++) {
+            int k = getEdgeCount(i1, j) + getEdgeCount(i2, j);
+            if(j == i2) {
+                k--;
+            }
+            setEdgeCount(i1, j, k);
+        }
+    }
+
+    public void addColumns(int i1, int i2) throws InvalidOperationException {
+        int[] i1entries = getEntries(i1);
+
+        if(i1entries[i2] < 1) {
+            throw new InvalidOperationException();
+        }
+
+        for(int j = 0; j < nbVertices(); j++) {
+            int k = getEdgeCount(j, i1) + getEdgeCount(j, i2);
+            if(j == i2) {
+                k--;
+            }
+            setEdgeCount(j, i1, k);
+        }
+    }
 }
