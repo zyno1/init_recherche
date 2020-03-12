@@ -293,4 +293,28 @@ public class Graph implements IGraph {
             setEdgeCount(j, i1, k);
         }
     }
+
+    public void removeLooplessNodes() throws InvalidOperationException {
+        for(int j = nbVertices() - 1; j >= 0; j--) {
+            if(getEdgeCount(j, j) == 0) {
+                int se = GraphBW.sum(getEntries(j));
+                int sx = GraphBW.sum(getExits(j));
+
+                for(int i = 0; i < nbVertices(); i++) {
+                    if(se > sx) {
+                        while (getEdgeCount(j, i) > 0) {
+                            addColumns(i, j);
+                        }
+                    }
+                    else {
+                        while (getEdgeCount(i, j) > 0) {
+                            addLines(i, j);
+                        }
+                    }
+                }
+
+                removeNode(j);
+            }
+        }
+    }
 }
