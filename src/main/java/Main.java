@@ -28,12 +28,12 @@ public class Main {
         GraphBW gbw = GraphBWIO.loadFromFile("tests/g6.txt");
 
         //GraphIO.writeToDotFile(g, "init.dot");
-        GraphBWIO.writeToDotFile(gbw, "init.dot");
+        GraphBWIO.writeToDotFile(gbw, "dot/init.dot");
 
         //gbw.addExits(5, 6);
         gbw.addEntries(4, 1);
 
         //GraphIO.writeToDotFile(g, "r1.dot");
-        GraphBWIO.writeToDotFile(gbw, "r1.dot");
+        GraphBWIO.writeToDotFile(gbw, "dot/r1.dot");
     }
 }
