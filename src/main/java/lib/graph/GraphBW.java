@@ -79,6 +79,19 @@ public class GraphBW implements IGraph {
         data.set(i1 * nb + i2, n);
     }
 
+    public Color getColor(int i) {
+        int se = sum(getEntries(i));
+        int sx = sum(getExits(i));
+
+        if(se <= 1 && sx <= 1) {
+            return Color.Both;
+        }
+        else if(se <= 1) {
+            return Color.White;
+        }
+        return Color.Black;
+    }
+
     public void addEdges(int i1, int i2, int n) throws InvalidOperationException {
         int k = getEdgeCount(i1, i2) + n;
         setEdgeCount(i1, i2, k);
