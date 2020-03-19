@@ -19,8 +19,10 @@ package lib.graph;
 import lib.exceptions.InvalidOperationException;
 
 import java.lang.reflect.Array;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Queue;
 
 public class GraphBW implements IGraph {
     ArrayList<Integer> data;
@@ -86,7 +88,7 @@ public class GraphBW implements IGraph {
         if(se <= 1 && sx <= 1) {
             return Color.Both;
         }
-        else if(se <= 1) {
+        else if(sx <= 1) {
             return Color.White;
         }
         return Color.Black;
@@ -376,6 +378,77 @@ public class GraphBW implements IGraph {
             }
             else {
                 removeNode(exit[j--]);
+            }
+        }
+    }
+
+    public void addEntries(int i1, int i2) throws InvalidOperationException {
+        if(getColor(i1) == Color.Black) {
+            throw new InvalidOperationException();
+        }
+        removeEdges(i2, i1, 1);
+
+        Queue<Integer> q = new ArrayDeque(nbVertices());
+
+        for(int j = 0; j < nbVertices(); j++) {
+            int n = getEdgeCount(j, i2);
+
+            if(n != 0 && getColor(j) == Color.White) {
+                q.add(j); //note: if j is white then n = 1
+            }
+            else {
+                addEdges(j, i1, n);
+            }
+        }
+
+        while (!q.isEmpty()) {
+            int j = q.remove();
+
+            for(int k = 0; k < nbVertices(); k++) {
+                int n = getEdgeCount(k, j);
+
+                if(n != 0 && getColor(k) == Color.White) {
+                    q.add(k);
+                }
+                else {
+                    addEdges(k, i1, n);
+                }
+            }
+        }
+    }
+
+    public void addExits(int i1, int i2) throws InvalidOperationException {
+        if(getColor(i1) == Color.White) {
+            throw new InvalidOperationException();
+        }
+
+        removeEdges(i1, i2, 1);
+
+        Queue<Integer> q = new ArrayDeque(nbVertices());
+
+        for(int j = 0; j < nbVertices(); j++) {
+            int n = getEdgeCount(i2, j);
+
+            if(n != 0 && getColor(j) == Color.Black) {
+                q.add(j); //note: if j is black then n = 1
+            }
+            else {
+                addEdges(i1, j, n);
+            }
+        }
+
+        while (!q.isEmpty()) {
+            int j = q.remove();
+
+            for(int k = 0; k < nbVertices(); k++) {
+                int n = getEdgeCount(j, k);
+
+                if(n != 0 && getColor(k) == Color.Black) {
+                    q.add(k);
+                }
+                else {
+                    addEdges(i1, k, n);
+                }
             }
         }
     }
