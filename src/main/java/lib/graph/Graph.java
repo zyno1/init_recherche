@@ -262,7 +262,7 @@ public class Graph implements IGraph {
         return g;
     }
 
-    public void addLines(int i1, int i2) throws InvalidOperationException {
+    public void addExits(int i1, int i2) throws InvalidOperationException {
         int[] i1exit = getExits(i1);
 
         if(i1exit[i2] < 1) {
@@ -278,7 +278,7 @@ public class Graph implements IGraph {
         }
     }
 
-    public void addColumns(int i1, int i2) throws InvalidOperationException {
+    public void addEntries(int i1, int i2) throws InvalidOperationException {
         int[] i1entries = getEntries(i1);
 
         if(i1entries[i2] < 1) {
@@ -303,12 +303,12 @@ public class Graph implements IGraph {
                 for(int i = 0; i < nbVertices(); i++) {
                     if(se > sx) {
                         while (getEdgeCount(j, i) > 0) {
-                            addColumns(i, j);
+                            addEntries(i, j);
                         }
                     }
                     else {
                         while (getEdgeCount(i, j) > 0) {
-                            addLines(i, j);
+                            addExits(i, j);
                         }
                     }
                 }
