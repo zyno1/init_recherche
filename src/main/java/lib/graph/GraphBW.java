@@ -45,9 +45,9 @@ public class GraphBW implements IGraph {
         int n = g.nbVertices();
 
         for(int i = 0; i < n; i++) {
-            if(sum(g.getEntries(i)) > 1 && sum(g.getExits(i)) > 1) {
+            //if(sum(g.getEntries(i)) > 1 && sum(g.getExits(i)) > 1) {
                 g.flowEquivalence(i);
-            }
+            //}
         }
 
         GraphBW res = new GraphBW(0);
@@ -85,10 +85,10 @@ public class GraphBW implements IGraph {
         int se = sum(getEntries(i));
         int sx = sum(getExits(i));
 
-        if(se <= 1 && sx <= 1) {
+        if(se == 1 && sx == 1) {
             return Color.Both;
         }
-        else if(sx <= 1) {
+        else if(sx == 1) {
             return Color.White;
         }
         return Color.Black;

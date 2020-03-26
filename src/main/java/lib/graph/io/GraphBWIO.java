@@ -16,6 +16,7 @@ limitations under the License.
 
 package lib.graph.io;
 
+import lib.graph.Color;
 import lib.graph.Graph;
 import lib.graph.GraphBW;
 import lib.graph.IGraph;
@@ -34,7 +35,7 @@ public class GraphBWIO {
         out.write("digraph name {\n");
 
         for(int i = 0; i < g.nbVertices(); i++) {
-            if(GraphBW.sum(g.getExits(i)) > 1) {
+            if(g.getColor(i) == Color.Black) {
                 out.write(i + " [style=filled fontcolor=\"white\" fillcolor=\"black\"];\n");
             }
         }
