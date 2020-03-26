@@ -294,6 +294,44 @@ public class Graph implements IGraph {
         }
     }
 
+    public void subExits(int i1, int i2) throws InvalidOperationException {
+        int[] i1exits = getExits(i1);
+        int[] i2exits = getExits(i2);
+
+        i1exits[i2] += 1;
+
+        for (int j = 0; j < nbVertices(); j++) {
+            if(i1exits[j] < i2exits[j]) {
+                throw new InvalidOperationException();
+            }
+        }
+
+        for(int j = 0; j < nbVertices(); j++) {
+            i1exits[j] -= i2exits[j];
+
+            setEdgeCount(i1, j, i1exits[j]);
+        }
+    }
+
+    public void subEntries(int i1, int i2) throws InvalidOperationException {
+        int[] i1entries = getEntries(i1);
+        int[] i2entries = getEntries(i2);
+
+        i1entries[i2] += 1;
+
+        for (int j = 0; j < nbVertices(); j++) {
+            if(i1entries[j] < i2entries[j]) {
+                throw new InvalidOperationException();
+            }
+        }
+
+        for(int j = 0; j < nbVertices(); j++) {
+            i1entries[j] -= i2entries[j];
+
+            setEdgeCount(j, i1, i1entries[j]);
+        }
+    }
+
     public void removeLooplessNodes() throws InvalidOperationException {
         for(int j = nbVertices() - 1; j >= 0; j--) {
             if(getEdgeCount(j, j) == 0) {
