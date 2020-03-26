@@ -388,16 +388,43 @@ public class GraphBW implements IGraph {
         }
         removeEdges(i2, i1, 1);
 
+        int[] e = getIndirectEntries(i2);
+
+        for(int j = 0; j < nbVertices(); j++) {
+            addEdges(j, i1, e[j]);
+        }
+    }
+
+    public void addExits(int i1, int i2) throws InvalidOperationException {
+        if(getColor(i1) == Color.White) {
+            throw new InvalidOperationException();
+        }
+        removeEdges(i1, i2, 1);
+
+        int[] e = getInderectExits(i2);
+
+        for(int j = 0; j < nbVertices(); j++) {
+            addEdges(i1, j, e[j]);
+        }
+    }
+
+    private int[] zeros() {
+        return new int[nbVertices()];
+    }
+
+    private int[] getIndirectEntries(int i) {
+        int[] entries = zeros();
+
         Queue<Integer> q = new ArrayDeque(nbVertices());
 
         for(int j = 0; j < nbVertices(); j++) {
-            int n = getEdgeCount(j, i2);
+            int n = getEdgeCount(j, i);
 
             if(n != 0 && getColor(j) == Color.White) {
-                q.add(j); //note: if j is white then n = 1
+                q.add(j); //note: if j is black then n = 1
             }
             else {
-                addEdges(j, i1, n);
+                entries[j] += n;
             }
         }
 
@@ -411,29 +438,27 @@ public class GraphBW implements IGraph {
                     q.add(k);
                 }
                 else {
-                    addEdges(k, i1, n);
+                    entries[k] += n;
                 }
             }
         }
+
+        return entries;
     }
 
-    public void addExits(int i1, int i2) throws InvalidOperationException {
-        if(getColor(i1) == Color.White) {
-            throw new InvalidOperationException();
-        }
-
-        removeEdges(i1, i2, 1);
+    private int[] getInderectExits(int i) {
+        int[] exits = zeros();
 
         Queue<Integer> q = new ArrayDeque(nbVertices());
 
         for(int j = 0; j < nbVertices(); j++) {
-            int n = getEdgeCount(i2, j);
+            int n = getEdgeCount(i, j);
 
             if(n != 0 && getColor(j) == Color.Black) {
                 q.add(j); //note: if j is black then n = 1
             }
             else {
-                addEdges(i1, j, n);
+                exits[j] += n;
             }
         }
 
@@ -447,9 +472,48 @@ public class GraphBW implements IGraph {
                     q.add(k);
                 }
                 else {
-                    addEdges(i1, k, n);
+                    exits[k] += n;
                 }
             }
+        }
+
+        return exits;
+    }
+
+    public void subExits(int i1, int i2) throws InvalidOperationException {
+        if(getColor(i1) == Color.White) {
+            throw new InvalidOperationException();
+        }
+
+        int[] toSub = getInderectExits(i2);
+        toSub[i2] -= 1;
+        for(int j = 0; j < nbVertices(); j++) {
+            if(getEdgeCount(i1, j) < toSub[j]) {
+                throw new InvalidOperationException();
+            }
+        }
+
+        for(int j = 0; j < nbVertices(); j++) {
+            removeEdges(i1, j, toSub[j]);
+        }
+    }
+
+    public void subEntries(int i1, int i2) throws InvalidOperationException {
+        if(getColor(i1) == Color.Black) {
+            throw new InvalidOperationException();
+        }
+
+        int[] toSub = getIndirectEntries(i2);
+        toSub[i2] -= 1;
+        for(int j = 0; j < nbVertices(); j++) {
+            if(getEdgeCount(j, i1) < toSub[j]) {
+                System.out.println(j + " -> " + i1);
+                throw new InvalidOperationException();
+            }
+        }
+
+        for(int j = 0; j < nbVertices(); j++) {
+            removeEdges(j, i1, toSub[j]);
         }
     }
 }
