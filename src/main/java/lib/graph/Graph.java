@@ -355,4 +355,15 @@ public class Graph implements IGraph {
             }
         }
     }
+
+    public GraphBW toGraphBW() throws InvalidOperationException {
+        GraphBW g = new GraphBW(nb*2);
+        for(int i=0; i<nb; i++){
+            g.addEdges(i*2, i*2+1,1);
+            for (int j=0; j<nb; j++){
+                g.addEdges(i*2+1, j*2, data.get(i*nb+j));
+            }
+        }
+        return g;
+    }
 }

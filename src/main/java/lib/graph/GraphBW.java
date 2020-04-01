@@ -516,4 +516,5 @@ public class GraphBW implements IGraph {
             removeEdges(j, i1, toSub[j]);
         }
     }
+
 }
