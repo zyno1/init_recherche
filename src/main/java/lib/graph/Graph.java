@@ -17,8 +17,11 @@ limitations under the License.
 package lib.graph;
 
 import lib.exceptions.InvalidOperationException;
+import lib.graph.io.GraphIO;
+import lib.math.Calcul;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Graph implements IGraph {
     ArrayList<Integer> data;
@@ -39,6 +42,12 @@ public class Graph implements IGraph {
 
     public int getEdgeCount(int i1, int i2) {
         return data.get(i1 * nb + i2);
+    }
+
+    private int getEdgeCountWithoutIdentity(int i1, int i2) {
+        int res = data.get(i1 * nb + i2);
+        if(i1==i2)res--;
+        return res;
     }
 
     public void setEdgeCount(int i1, int i2, int n) {
@@ -142,12 +151,35 @@ public class Graph implements IGraph {
         return res;
     }
 
+    private int[] getExitsWithoutIdentity(int i) {
+        int[] res = new int[nb];
+
+        for(int j = 0; j < nb; j++) {
+            res[j] = getEdgeCount(i, j);
+        }
+        res[i]--;
+
+        return res;
+    }
+
     public int[] getEntries(int i) {
         int [] res = new int[nb];
 
         for(int j = 0; j < nb; j++) {
             res[j] = getEdgeCount(j, i);
         }
+
+        return res;
+    }
+
+    private int[] getEntriesWithoutIdentity(int i) {
+        int [] res = new int[nb];
+
+        for(int j = 0; j < nb; j++) {
+            res[j] = getEdgeCount(j, i);
+        }
+
+        res[i]--;
 
         return res;
     }
@@ -335,8 +367,8 @@ public class Graph implements IGraph {
     public void removeLooplessNodes() throws InvalidOperationException {
         for(int j = nbVertices() - 1; j >= 0; j--) {
             if(getEdgeCount(j, j) == 0) {
-                int se = GraphBW.sum(getEntries(j));
-                int sx = GraphBW.sum(getExits(j));
+                int se = Calcul.sum(getEntries(j));
+                int sx = Calcul.sum(getExits(j));
 
                 for(int i = 0; i < nbVertices(); i++) {
                     if(se > sx) {
@@ -356,14 +388,190 @@ public class Graph implements IGraph {
         }
     }
 
-    public GraphBW toGraphBW() throws InvalidOperationException {
-        GraphBW g = new GraphBW(nb*2);
-        for(int i=0; i<nb; i++){
-            g.addEdges(i*2, i*2+1,1);
-            for (int j=0; j<nb; j++){
-                g.addEdges(i*2+1, j*2, data.get(i*nb+j));
+    public void putZeroOnLines() throws InvalidOperationException {
+        for (int j = nbVertices() - 1; j >= 0; j--) {
+            int out[] = getExitsWithoutIdentity(j);
+            int notzero = 0;
+            int min = -1;
+            for (int i = 0; i < nbVertices(); i++) {
+                if (out[i] != 0) {
+                    notzero++;
+                    if (min == -1 || out[min] > out[i]) {
+                        min = i;
+                    }
+                }
+            }
+            while (notzero > 1) {
+                for (int i = nbVertices() - 1; i >= 0; i--) {
+                    int a = getEdgeCountWithoutIdentity(j, i);
+                    if (i != min && a != 0) {
+                        int b = getEdgeCountWithoutIdentity(j, min);
+                        while (a>b){
+                            for (int l = nbVertices() - 1; l >= 0; l--) {
+                                if (l != j) {
+
+                                    int c = getEdgeCountWithoutIdentity(l, i);
+                                    int d = getEdgeCountWithoutIdentity(l, min);
+
+                                    while (c-d<0) {
+                                        c += a;
+                                        d += b;
+                                        addExits(l, j);
+                                    }
+                                }
+                            }
+                            subEntries(i,min);
+                            a = getEdgeCountWithoutIdentity(j, i);
+                            b = getEdgeCountWithoutIdentity(j, i);
+                        }
+
+                        if(a==b) {
+                            boolean swip = true;
+                            int cbis=0;
+                            int dbis=0;
+                            int bis = -1;
+                            for (int l = nbVertices() - 1; l >= 0; l--) {
+                                if (l != j) {
+                                    int c = getEdgeCountWithoutIdentity(l, i);
+                                    int d = getEdgeCountWithoutIdentity(l, min);
+
+                                    if (c>d) {
+                                        swip=false;
+                                        cbis= c;
+                                        dbis= d;
+                                        bis = l;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(swip){
+                                min = i;
+                            }else{
+                                for (int l = nbVertices() - 1; l >= 0; l--) {
+                                    if (l != j) {
+                                        int c = getEdgeCountWithoutIdentity(l, i);
+                                        int d = getEdgeCountWithoutIdentity(l, min);
+
+                                        while (c<d) {
+                                            addExits(l, bis);
+                                            c+=cbis;
+                                            d+=dbis;
+                                        }
+                                    }
+                                }
+                                subEntries(i,min);
+                                a = getEdgeCountWithoutIdentity(j, i);
+                                b = getEdgeCountWithoutIdentity(j, min);
+
+                            }
+                        }
+
+                        if (a == 0) {
+                            notzero--;
+                        } else if(a<b){
+                            min = i;
+                        }
+                    }
+                }
             }
         }
-        return g;
     }
+
+    public void putZeroOnColumns() throws InvalidOperationException {
+        for (int j = nbVertices() - 1; j >= 0; j--) {
+            int in[] = getEntriesWithoutIdentity(j);
+            int notzero = 0;
+            int min = -1;
+            for (int i = 0; i < nbVertices(); i++) {
+                if (in[i] != 0) {
+                    notzero++;
+                    if (min == -1 || in[min] > in[i]) {
+                        min = i;
+                    }
+                }
+            }
+            while (notzero > 1) {
+                for (int i = nbVertices() - 1; i >= 0; i--) {
+                    int a = getEdgeCountWithoutIdentity(i, j);
+                    if (i != min && a != 0) {
+                        int b = getEdgeCountWithoutIdentity(min, j);
+                        while (a>b){
+                            for (int l = nbVertices() - 1; l >= 0; l--) {
+                                if (l != j) {
+
+                                    int c = getEdgeCountWithoutIdentity(i,l);
+                                    int d = getEdgeCountWithoutIdentity(min, l);
+                                    while (c-d<0) {
+                                        c += a;
+                                        d += b;
+                                        addEntries(l, j);
+                                    }
+                                }
+                            }
+                            subExits(i,min);
+                            a = getEdgeCountWithoutIdentity(i, j);
+                            b = getEdgeCountWithoutIdentity(min, j);
+                        }
+
+                        if(a==b) {
+                            boolean swip = true;
+                            int cbis=0;
+                            int dbis=0;
+                            int bis = -1;
+                            for (int l = nbVertices() - 1; l >= 0; l--) {
+                                if (l != j) {
+                                    int c = getEdgeCountWithoutIdentity(i, l);
+                                    int d = getEdgeCountWithoutIdentity(min, l);
+
+                                    if (c>d) {
+                                        swip=false;
+                                        cbis= c;
+                                        dbis= d;
+                                        bis = l;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(swip){
+                                min = i;
+                            }else{
+                                for (int l = nbVertices() - 1; l >= 0; l--) {
+                                    if (l != j) {
+                                        int c = getEdgeCountWithoutIdentity(i, l);
+                                        int d = getEdgeCountWithoutIdentity(min, l);
+
+                                        while (c<d) {
+                                            addEntries(l, bis);
+                                            c+=cbis;
+                                            d+=dbis;
+                                        }
+                                    }
+                                }
+                                subExits(i,min);
+                                a = getEdgeCountWithoutIdentity(i, j);
+                                b = getEdgeCountWithoutIdentity(min, j);
+
+                            }
+                        }
+
+                        if (a == 0) {
+                            notzero--;
+                        } else if(a<b){
+                            min = i;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void putZeros() throws InvalidOperationException {
+        putZeroOnLines();
+        System.out.println("0 sur les lignes : ");
+        GraphIO.printGraph(this);
+        putZeroOnColumns();
+        System.out.println("0 sur les colonnes : ");
+        GraphIO.printGraph(this);
+    }
+
 }

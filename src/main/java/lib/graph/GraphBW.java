@@ -17,6 +17,7 @@ limitations under the License.
 package lib.graph;
 
 import lib.exceptions.InvalidOperationException;
+import lib.math.Calcul;
 
 import java.lang.reflect.Array;
 import java.util.ArrayDeque;
@@ -74,7 +75,7 @@ public class GraphBW implements IGraph {
         i1exit[i2] = n;
         i2entry[i1] = n;
 
-        if((sum(i1entry) > 1 && sum(i1exit) > 1) || (sum(i2entry) > 1 && sum(i2exit) > 1)) {
+        if((Calcul.sum(i1entry) > 1 && Calcul.sum(i1exit) > 1) || (Calcul.sum(i2entry) > 1 && Calcul.sum(i2exit) > 1)) {
             throw new InvalidOperationException();
         }
 
@@ -82,8 +83,8 @@ public class GraphBW implements IGraph {
     }
 
     public Color getColor(int i) {
-        int se = sum(getEntries(i));
-        int sx = sum(getExits(i));
+        int se = Calcul.sum(getEntries(i));
+        int sx = Calcul.sum(getExits(i));
 
         if(se == 1 && sx == 1) {
             return Color.Both;
@@ -105,14 +106,6 @@ public class GraphBW implements IGraph {
             throw new InvalidOperationException();
         }
         setEdgeCount(i1, i2, k);
-    }
-
-    public static int sum(int... n) {
-        int res = 0;
-        for(int i : n) {
-            res += i;
-        }
-        return res;
     }
 
     public int addNode() {
@@ -162,7 +155,7 @@ public class GraphBW implements IGraph {
         //int[] exits = getExits(i);
         int i2 = addNode();
 
-        if(sum(entries) <= 1) {
+        if(Calcul.sum(entries) <= 1) {
             addEdges(i1, i2, 1);
             for(int j = 0; j < nbVertices(); j++) {
                 int tmp = getEdgeCount(i1, j);
@@ -227,7 +220,7 @@ public class GraphBW implements IGraph {
         int[] entries = getEntries(i);
         int[] exits = getExits(i);
 
-        if(sum(entries) != 1 || sum(exits) != 1) {
+        if(Calcul.sum(entries) != 1 || Calcul.sum(exits) != 1) {
             throw new InvalidOperationException();
         }
 
@@ -251,7 +244,7 @@ public class GraphBW implements IGraph {
         int[] i1exit = getExits(i1);
         int[] i2entries = getEntries(i2);
 
-        if(sum(i1exit) != 1 || sum(i2entries) != 1 || getEdgeCount(i1, i2) != 1) {
+        if(Calcul.sum(i1exit) != 1 || Calcul.sum(i2entries) != 1 || getEdgeCount(i1, i2) != 1) {
             throw new InvalidOperationException();
         }
 
@@ -326,12 +319,12 @@ public class GraphBW implements IGraph {
         }
 
         for(int ei : entry) {
-            if(sum(getEntries(ei)) != 1) {
+            if(Calcul.sum(getEntries(ei)) != 1) {
                 throw new InvalidOperationException();
             }
         }
         for(int xi : exit) {
-            if(sum(getExits(xi)) != 1) {
+            if(Calcul.sum(getExits(xi)) != 1) {
                 throw new InvalidOperationException();
             }
         }
