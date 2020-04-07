@@ -24,28 +24,30 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g1.txt");
+        Graph g = GraphIO.loadFromFile("tests/g9.txt");
         //GraphBW gbw = GraphBWIO.loadFromFile("tests/g2.txt");
 
-        GraphIO.writeToDotFile(g, "dot/init.dot");
-        //GraphBWIO.writeToDotFile(gbw, "dot/init.dot");
-
         //g.addEntries(0, 1);
-        g.removeLooplessNodes();
+        //g.removeLooplessNodes();
         //gbw.addEntries(3, 4);
         //gbw.addExits(7, 1);
 
-        GraphIO.writeToDotFile(g, "dot/r1.dot");
+        //GraphIO.writeToDotFile(g, "dot/r1.dot");
         //GraphBWIO.writeToDotFile(gbw, "dot/r1.dot");
 
         //g.subEntries(0, 1);
         GraphIO.printGraph(g);
-        g.putZeros();
+
+        g.addEntries(2, 1);
+        g.reduce(2, 0, 2);
+
+        GraphIO.printGraph(g);
+        //g.putZeros();
         //GraphIO.printGraph(g);
         //gbw.subExits(7, 1);
         //gbw.subEntries(3, 4);
 
         //GraphBWIO.writeToDotFile(gbw, "dot/r2.dot");
-        GraphIO.writeToDotFile(g, "dot/r2.dot");
+        //GraphIO.writeToDotFile(g, "dot/r2.dot");
     }
 }

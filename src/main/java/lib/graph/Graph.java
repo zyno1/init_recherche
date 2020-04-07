@@ -388,6 +388,33 @@ public class Graph implements IGraph {
         }
     }
 
+    public void reduce(int line, int min, int dst) throws InvalidOperationException {
+        int[] minEntries = getEntriesWithoutIdentity(min);
+        int[] dstEntries = getEntriesWithoutIdentity(dst);
+
+        int nb = dstEntries[line] / minEntries[line];
+
+        for(int i = 0; i < nbVertices(); i++) {
+            if(minEntries[i] * nb > dstEntries[i]) {
+                double k = Math.ceil((double)(nb * minEntries[i] - dstEntries[i]) / (dstEntries[line] - minEntries[line] * nb));
+
+                /*
+                des fois le coeff k = +infini, du coup ça termine pas toujours
+                 */
+
+                while (k > 0) {
+                    addExits(i, line);
+                    k--;
+                }
+            }
+        }
+
+        while (nb > 0) {
+            subEntries(dst, min);
+            nb--;
+        }
+    }
+
     public void putZeroOnLines() throws InvalidOperationException {
         for (int j = nbVertices() - 1; j >= 0; j--) {
             int out[] = getExitsWithoutIdentity(j);
