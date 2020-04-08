@@ -24,30 +24,33 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g9.txt");
-        //GraphBW gbw = GraphBWIO.loadFromFile("tests/g2.txt");
-
-        //g.addEntries(0, 1);
-        //g.removeLooplessNodes();
-        //gbw.addEntries(3, 4);
-        //gbw.addExits(7, 1);
-
-        //GraphIO.writeToDotFile(g, "dot/r1.dot");
-        //GraphBWIO.writeToDotFile(gbw, "dot/r1.dot");
-
-        //g.subEntries(0, 1);
-        GraphIO.printGraph(g);
-
-        g.addEntries(2, 1);
-        g.reduce(2, 0, 2);
+        Graph g = GraphIO.loadFromFile("tests/g2.txt");
+        Graph f = g.clone();
 
         GraphIO.printGraph(g);
-        //g.putZeros();
+        GraphIO.writeToDotFile(g, "dot/r0.dot");
+
+        int p0 = g.splitExits(0, 0, 1);
+
         //GraphIO.printGraph(g);
-        //gbw.subExits(7, 1);
-        //gbw.subEntries(3, 4);
+        GraphIO.writeToDotFile(g, "dot/r1.dot");
 
-        //GraphBWIO.writeToDotFile(gbw, "dot/r2.dot");
-        //GraphIO.writeToDotFile(g, "dot/r2.dot");
+        int p1 = g.splitEntries(1, 0, 0, 0, 0, 1);
+
+        //GraphIO.printGraph(g);
+        GraphIO.writeToDotFile(g, "dot/r2.dot");
+
+        g.flowEquivalence(p0, p1);
+
+        //GraphIO.printGraph(g);
+        GraphIO.writeToDotFile(g, "dot/r3.dot");
+
+        g.mergeExits(0, p0);
+
+        GraphIO.printGraph(g);
+        GraphIO.writeToDotFile(g, "dot/r.dot");
+
+        f.addExits(0, 1);
+        GraphIO.printGraph(f);
     }
 }

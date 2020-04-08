@@ -294,6 +294,14 @@ public class Graph implements IGraph {
         return g;
     }
 
+    private int[] zeros() {
+        return new int[nbVertices()];
+    }
+
+    private int[] zeros(int nb) {
+        return new int[nb];
+    }
+
     public void addExits(int i1, int i2) throws InvalidOperationException {
         int[] i1exit = getExits(i1);
 
@@ -301,13 +309,18 @@ public class Graph implements IGraph {
             throw new InvalidOperationException();
         }
 
-        for(int j = 0; j < nbVertices(); j++) {
-            int k = getEdgeCount(i1, j) + getEdgeCount(i2, j);
-            if(j == i2) {
-                k--;
-            }
-            setEdgeCount(i1, j, k);
-        }
+        int[] tmp = zeros(nbVertices() + 1);
+
+        tmp[i2] = 1;
+        int p1 = splitExits(i1, tmp);
+        tmp[i2] = 0;
+
+        tmp[p1] = 1;
+        int p2 = splitEntries(i2, tmp);
+
+        flowEquivalence(p1, p2);
+
+        mergeExits(i1, p1);
     }
 
     public void addEntries(int i1, int i2) throws InvalidOperationException {
