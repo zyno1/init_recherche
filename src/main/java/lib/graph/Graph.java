@@ -188,13 +188,9 @@ public class Graph implements IGraph {
         int i2 = addNode();
 
         for(int j = 0; j < nb; j++) {
-            setEdgeCount(i2, j, getEdgeCount(i, j));
-        }
-
-        for(int j = 0; j < nb; j++) {
             int count = getEdgeCount(j, i);
             int s = 0;
-            if(split.length > j && j != i) {
+            if(split.length > j) {
                 s = split[j];
             }
 
@@ -207,6 +203,8 @@ public class Graph implements IGraph {
 
             setEdgeCount(j, i, c1);
             setEdgeCount(j, i2, c2);
+
+            setEdgeCount(i2, j, getEdgeCount(i, j));
         }
         return i2;
     }
@@ -215,13 +213,9 @@ public class Graph implements IGraph {
         int i2 = addNode();
 
         for(int j = 0; j < nb; j++) {
-            setEdgeCount(j, i2, getEdgeCount(j, i));
-        }
-
-        for(int j = 0; j < nb; j++) {
             int count = getEdgeCount(i, j);
             int s = 0;
-            if(split.length > j && j != i) {
+            if(split.length > j) {
                 s = split[j];
             }
 
@@ -234,6 +228,8 @@ public class Graph implements IGraph {
 
             setEdgeCount(i, j, c1);
             setEdgeCount(i2, j, c2);
+
+            setEdgeCount(j, i2, getEdgeCount(j, i));
         }
         return i2;
     }
@@ -343,19 +339,17 @@ public class Graph implements IGraph {
         int[] i1exits = getExits(i1);
         int[] i2exits = getExits(i2);
 
-        i1exits[i2] += 1;
-
         for (int j = 0; j < nbVertices(); j++) {
             if(i1exits[j] < i2exits[j]) {
                 throw new InvalidOperationException();
             }
         }
 
-        for(int j = 0; j < nbVertices(); j++) {
-            i1exits[j] -= i2exits[j];
+        int p1 = splitExits(i1, getExits(i2));
+        int p2 = flowEquivalence(p1);
 
-            setEdgeCount(i1, j, i1exits[j]);
-        }
+        mergeEntries(i2, p2);
+        mergeExits(i1, p1);
     }
 
     public void subEntries(int i1, int i2) throws InvalidOperationException {
