@@ -26,10 +26,17 @@ public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
         Graph g = GraphIO.loadFromFile("tests/g2.txt");
 
-        g.addExits(0, 1);
         GraphIO.printGraph(g);
 
-        g.subExits(0, 1);
+        /*int p1 = g.splitExits(0, 0, 1);
+        int p2 = g.splitEntries(1, 0, 0, 0, 0, 1);
+
+        g.flowEquivalence(p1, p2);
+
+        g.mergeEntries(1, p1);*/
+
+        g.addEntries(1, 0);
+        g.subEntries(1, 0);
 
         GraphIO.printGraph(g);
     }

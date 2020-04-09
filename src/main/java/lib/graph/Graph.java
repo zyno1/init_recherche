@@ -291,7 +291,7 @@ public class Graph implements IGraph {
     }
 
     private int[] zeros() {
-        return new int[nbVertices()];
+        return zeros(nbVertices());
     }
 
     private int[] zeros(int nb) {
@@ -326,13 +326,18 @@ public class Graph implements IGraph {
             throw new InvalidOperationException();
         }
 
-        for(int j = 0; j < nbVertices(); j++) {
-            int k = getEdgeCount(j, i1) + getEdgeCount(j, i2);
-            if(j == i2) {
-                k--;
-            }
-            setEdgeCount(j, i1, k);
-        }
+        int[] tmp = zeros(nbVertices() + 1);
+
+        tmp[i1] = 1;
+        int p2 = splitExits(i2, tmp);
+        tmp[i1] = 0;
+
+        tmp[p2] = 1;
+        int p1 = splitEntries(i1, tmp);
+
+        flowEquivalence(p2, p1);
+
+        mergeEntries(i1, p2);
     }
 
     public void subExits(int i1, int i2) throws InvalidOperationException {
@@ -356,19 +361,17 @@ public class Graph implements IGraph {
         int[] i1entries = getEntries(i1);
         int[] i2entries = getEntries(i2);
 
-        i1entries[i2] += 1;
-
         for (int j = 0; j < nbVertices(); j++) {
             if(i1entries[j] < i2entries[j]) {
                 throw new InvalidOperationException();
             }
         }
 
-        for(int j = 0; j < nbVertices(); j++) {
-            i1entries[j] -= i2entries[j];
+        int p1 = splitEntries(i1, getEntries(i2));
+        int p2 = flowEquivalence(p1);
 
-            setEdgeCount(j, i1, i1entries[j]);
-        }
+        mergeEntries(i1, p2);
+        mergeExits(i2, p1);
     }
 
     public void removeLooplessNodes() throws InvalidOperationException {
