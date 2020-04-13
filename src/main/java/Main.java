@@ -21,23 +21,26 @@ import lib.graph.io.GraphBWIO;
 import lib.graph.io.GraphIO;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g2.txt");
+        //Graph g = GraphIO.loadFromFile("tests/g1.txt");
+        GraphBW g = GraphBWIO.loadFromFile("tests/g1.txt");
 
-        GraphIO.printGraph(g);
+        GraphBWIO.writeToDotFile(g, "dot/r0.dot");
 
-        /*int p1 = g.splitExits(0, 0, 1);
-        int p2 = g.splitEntries(1, 0, 0, 0, 0, 1);
+        g.addExits(4, 2);
 
-        g.flowEquivalence(p1, p2);
 
-        g.mergeEntries(1, p1);*/
+        GraphBWIO.writeToDotFile(g, "dot/r1.dot");
 
-        g.addEntries(1, 0);
-        g.subEntries(1, 0);
+        /*g.merge(3, 6);
 
-        GraphIO.printGraph(g);
+        GraphBWIO.writeToDotFile(g, "dot/r2.dot");
+
+        g.merge(2, 7);
+
+        GraphBWIO.writeToDotFile(g, "dot/r3.dot");*/
     }
 }

@@ -75,7 +75,10 @@ public class GraphBW implements IGraph {
         i1exit[i2] = n;
         i2entry[i1] = n;
 
-        if((Calcul.sum(i1entry) > 1 && Calcul.sum(i1exit) > 1) || (Calcul.sum(i2entry) > 1 && Calcul.sum(i2exit) > 1)) {
+        if((Calcul.sum(i1entry) > 1 && Calcul.sum(i1exit) > 1)) {
+            throw new InvalidOperationException();
+        }
+        if((Calcul.sum(i2entry) > 1 && Calcul.sum(i2exit) > 1)) {
             throw new InvalidOperationException();
         }
 
@@ -200,6 +203,51 @@ public class GraphBW implements IGraph {
         return i2;
     }
 
+    public void merge(int i1, int i2, Color c) throws InvalidOperationException {
+        if(i1 > i2) {
+            int tmp = i1;
+            i1 = i2;
+            i2 = tmp;
+        }
+
+        Color c1 = getColor(i1);
+        Color c2 = getColor(i2);
+
+        if(c1 != Color.Both && c2 != Color.Both && c1 != c2) {
+            throw new InvalidOperationException();
+        }
+
+        if(c1 != Color.Both && c1 != c) {
+            throw new InvalidOperationException();
+        }
+
+        if (getEdgeCount(i1, i2) == 0 && getEdgeCount(i2, i1) == 0) {
+            throw new InvalidOperationException();
+        }
+
+        if(getEdgeCount(i1, i2) == 1) {
+            setEdgeCount(i1, i2, 0);
+        }
+        else if(getEdgeCount(i2, i1) == 1) {
+            setEdgeCount(i2, i1, 0);
+        }
+
+        if(c1 == Color.Black) {
+            for(int i = 0; i < nbVertices(); i++) {
+                int n = getEdgeCount(i2, i);
+                addEdges(i1, i, n);
+            }
+        }
+        else {
+            for(int i = 0; i < nbVertices(); i++) {
+                int n = getEdgeCount(i, i2);
+                addEdges(i, i1, n);
+            }
+        }
+
+        removeNode(i2);
+    }
+
     public int addNodeOnEdge(int i1, int i2) throws InvalidOperationException {
         int nb = getEdgeCount(i1, i2);
         if(nb < 1) {
@@ -240,7 +288,7 @@ public class GraphBW implements IGraph {
         removeNode(i);
     }
 
-    public void r3(final int i1, final int i2) throws InvalidOperationException {
+    public int[][] r3(final int i1, final int i2) throws InvalidOperationException {
         int[] i1exit = getExits(i1);
         int[] i2entries = getEntries(i2);
 
@@ -251,6 +299,8 @@ public class GraphBW implements IGraph {
         int first = nbVertices();
         int entry = 0;
         int exit = 0;
+
+        int[][] res = new int[2][];
 
         for(int j = 0; j < nbVertices(); j++) {
             int n = getEdgeCount(j, i1);
@@ -274,7 +324,8 @@ public class GraphBW implements IGraph {
             setEdgeCount(i2, j, 0);
         }
 
-
+        res[0] = new int[entry];
+        res[1] = new int[exit];
 
         for(int i = 0; i < entry; i++) {
             for(int j = 0; j < exit; j++) {
@@ -290,6 +341,15 @@ public class GraphBW implements IGraph {
             removeNode(i2);
             removeNode(i1);
         }
+
+        for (int i = 0; i < entry; i++) {
+            res[0][i] = i + first - 2;
+        }
+        for(int i = 0; i < exit; i++) {
+            res[1][i] = i + first + entry - 2;
+        }
+
+        return res;
     }
 
     private boolean contains(int i, int... l) {
@@ -388,16 +448,67 @@ public class GraphBW implements IGraph {
         }
     }
 
+    public int getBrother(int i, Color c) {
+        if(c == Color.Black) {
+            for (int j = 0; j < nbVertices(); j++) {
+                if(getEdgeCount(j, i) == 1) {
+                    return j;
+                }
+            }
+        }
+        else {
+            for (int j = 0; j < nbVertices(); j++) {
+                if(getEdgeCount(i, j) == 1) {
+                    return j;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private void correction(int removed, int[] list) {
+        for(int i = 0; i < list.length; i++) {
+            if(removed < list[i]) {
+                list[i]--;
+            }
+        }
+    }
+
     public void addExits(int i1, int i2) throws InvalidOperationException {
-        if(getColor(i1) == Color.White) {
+        if(getColor(i2) == Color.Black || getColor(i1) == Color.White || getEdgeCount(i1, i2) < 1) {
             throw new InvalidOperationException();
         }
-        removeEdges(i1, i2, 1);
 
-        int[] e = getInderectExits(i2);
+        int[] i2entries = getEntries(i2);
+        i2entries[i1] -= 1;
+        split(i2, i2entries);
 
-        for(int j = 0; j < nbVertices(); j++) {
-            addEdges(i1, j, e[j]);
+        int i2b = getBrother(i2, Color.White);
+        int[][] tmp = r3(i2, i2b);
+
+        if(i2b < i1) {
+            i1--;
+        }
+        if(i2 < i1) {
+            i1--;
+        }
+
+        for (int i = tmp[1].length - 1; i >= 0; i--) {
+            int b = getBrother(tmp[1][i], Color.White);
+            if(getColor(b) != Color.Black) {
+                System.out.println("merge " + b + ", " + tmp[1][i]);
+                merge(b, tmp[1][i], Color.White);
+            }
+        }
+
+        System.out.println("---");
+
+        for(int i = tmp[0].length - 1; i >= 0; i--) {
+            int b = getBrother(tmp[0][i], Color.Black);
+            if(getColor(b) != Color.White && b == i1) {
+                System.out.println("merge " + b + ", " + tmp[0][i]);
+                merge(b, tmp[0][i], Color.Black);
+            }
         }
     }
 
