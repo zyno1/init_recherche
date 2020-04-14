@@ -247,20 +247,22 @@ public class GraphBW implements IGraph {
         if(c1 == Color.Black) {
             for(int i = 0; i < nbVertices(); i++) {
                 int n = getEdgeCount(i2, i);
+                setEdgeCount(i2, i, 0);
                 addEdges(i1, i, n);
 
                 n = getEdgeCount(i, i2);
-                removeEdges(i, i2, n);
+                setEdgeCount(i, i2, 0);
                 addEdges(i, i1, n);
             }
         }
         else {
             for(int i = 0; i < nbVertices(); i++) {
                 int n = getEdgeCount(i, i2);
+                setEdgeCount(i, i2, 0);
                 addEdges(i, i1, n);
 
                 n = getEdgeCount(i2, i);
-                removeEdges(i2, i, n);
+                setEdgeCount(i2, i, 0);
                 addEdges(i1, i, n);
             }
         }
@@ -644,4 +646,15 @@ public class GraphBW implements IGraph {
         }
     }
 
+    public void removeSameColorNodes() throws InvalidOperationException {
+        for(int i = nbVertices() - 1; i >= 0; i--) {
+            for (int j = 0; j < nbVertices(); j++) {
+                if(getColor(i) == getColor(j) && i != j && (getEdgeCount(i, j) != 0 || getEdgeCount(j, i) != 0)) {
+                    System.out.println(i + " -> " + j);
+                    merge(i, j);
+                    break;
+                }
+            }
+        }
+    }
 }

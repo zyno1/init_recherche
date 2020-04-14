@@ -31,22 +31,21 @@ public class Main {
 
         GraphBWIO.writeToDotFile(g, "dot/r0.dot");
 
-        //g.addExits(4, 2);
-        g.removeNodeOnEdge(2);
-        g.merge(10, 12);
-        g.removeNodeOnEdge(11);
+        g.setColor(21, Color.White);
+        g.setColor(2, Color.Black);
+        g.setColor(5, Color.Black);
+        g.setColor(6, Color.Black);
+        g.setColor(9, Color.Black);
+        g.setColor(18, Color.White);
 
         GraphBWIO.writeToDotFile(g, "dot/r1.dot");
 
-        g.merge(1, 3);
-        g.setColor(3, Color.Black);
-        g.merge(3, 12);
-        g.merge(3, 11);
+        g.removeSameColorNodes();
 
         GraphBWIO.writeToDotFile(g, "dot/r2.dot");
 
-        g.removeNodeOnEdge(7);
-        g.merge(10, 13);
+        g.setColor(7, Color.White);
+        g.removeSameColorNodes();
 
         GraphBWIO.writeToDotFile(g, "dot/r3.dot");
 
