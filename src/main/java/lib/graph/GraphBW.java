@@ -304,7 +304,7 @@ public class GraphBW implements IGraph {
         int[] i1exit = getExits(i1);
         int[] i2entries = getEntries(i2);
 
-        if(Calcul.sum(i1exit) != 1 || Calcul.sum(i2entries) != 1 || getEdgeCount(i1, i2) != 1) {
+        if(getColor(i1) != Color.White || getColor(i2) != Color.Black || getEdgeCount(i1, i2) != 1) {
             throw new InvalidOperationException();
         }
 
@@ -391,12 +391,12 @@ public class GraphBW implements IGraph {
         }
 
         for(int ei : entry) {
-            if(Calcul.sum(getEntries(ei)) != 1) {
+            if(getColor(ei) != Color.Black) {
                 throw new InvalidOperationException();
             }
         }
         for(int xi : exit) {
-            if(Calcul.sum(getExits(xi)) != 1) {
+            if(getColor(xi) != Color.White) {
                 throw new InvalidOperationException();
             }
         }
