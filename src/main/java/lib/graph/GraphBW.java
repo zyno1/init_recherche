@@ -248,12 +248,20 @@ public class GraphBW implements IGraph {
             for(int i = 0; i < nbVertices(); i++) {
                 int n = getEdgeCount(i2, i);
                 addEdges(i1, i, n);
+
+                n = getEdgeCount(i, i2);
+                removeEdges(i, i2, n);
+                addEdges(i, i1, n);
             }
         }
         else {
             for(int i = 0; i < nbVertices(); i++) {
                 int n = getEdgeCount(i, i2);
                 addEdges(i, i1, n);
+
+                n = getEdgeCount(i2, i);
+                removeEdges(i2, i, n);
+                addEdges(i1, i, n);
             }
         }
 
@@ -295,6 +303,9 @@ public class GraphBW implements IGraph {
                 i2 = j;
             }
         }
+
+        removeEdges(i1, i, 1);
+        removeEdges(i, i2, 1);
 
         addEdges(i1, i2, 1);
         removeNode(i);

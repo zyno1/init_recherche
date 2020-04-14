@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import lib.exceptions.InvalidOperationException;
+import lib.graph.Color;
 import lib.graph.Graph;
 import lib.graph.GraphBW;
 import lib.graph.io.GraphBWIO;
@@ -26,14 +27,28 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
         //Graph g = GraphIO.loadFromFile("tests/g1.txt");
-        GraphBW g = GraphBWIO.loadFromFile("tests/g1.txt");
+        GraphBW g = GraphBWIO.loadFromFile("tests/g6.txt");
 
         GraphBWIO.writeToDotFile(g, "dot/r0.dot");
 
-        g.addExits(4, 2);
-
+        //g.addExits(4, 2);
+        g.removeNodeOnEdge(2);
+        g.merge(10, 12);
+        g.removeNodeOnEdge(11);
 
         GraphBWIO.writeToDotFile(g, "dot/r1.dot");
+
+        g.merge(1, 3);
+        g.setColor(3, Color.Black);
+        g.merge(3, 12);
+        g.merge(3, 11);
+
+        GraphBWIO.writeToDotFile(g, "dot/r2.dot");
+
+        g.removeNodeOnEdge(7);
+        g.merge(10, 13);
+
+        GraphBWIO.writeToDotFile(g, "dot/r3.dot");
 
         /*g.merge(3, 6);
 
