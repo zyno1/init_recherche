@@ -31,21 +31,14 @@ public class Main {
 
         GraphBWIO.writeToDotFile(g, "dot/r0.dot");
 
-        g.setColor(21, Color.White);
-        g.setColor(2, Color.Black);
-        g.setColor(5, Color.Black);
-        g.setColor(6, Color.Black);
-        g.setColor(9, Color.Black);
-        g.setColor(18, Color.White);
+        //g.removeSameColorNodes();
+        g.addExits(15, 5);
 
         GraphBWIO.writeToDotFile(g, "dot/r1.dot");
 
-        g.removeSameColorNodes();
+        //g.addExits(15, 5);
 
         GraphBWIO.writeToDotFile(g, "dot/r2.dot");
-
-        g.setColor(7, Color.White);
-        g.removeSameColorNodes();
 
         GraphBWIO.writeToDotFile(g, "dot/r3.dot");
 

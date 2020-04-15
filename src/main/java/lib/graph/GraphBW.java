@@ -329,24 +329,24 @@ public class GraphBW implements IGraph {
 
         for(int j = 0; j < nbVertices(); j++) {
             int n = getEdgeCount(j, i1);
+            setEdgeCount(j, i1, 0);
             while (n > 0) {
                 int t = addNode(Color.Black);
                 addEdges(j, t, 1);
                 entry++;
                 n--;
             }
-            setEdgeCount(j, i1, 0);
         }
 
         for(int j = 0; j < nbVertices(); j++) {
             int n = getEdgeCount(i2, j);
+            setEdgeCount(i2, j, 0);
             while (n > 0) {
                 int t = addNode(Color.White);
                 addEdges(t, j, 1);
                 exit++;
                 n--;
             }
-            setEdgeCount(i2, j, 0);
         }
 
         res[0] = new int[entry];
@@ -518,23 +518,7 @@ public class GraphBW implements IGraph {
             i1--;
         }
 
-        for (int i = tmp[1].length - 1; i >= 0; i--) {
-            int b = getBrother(tmp[1][i]);
-            if(getColor(b) != Color.Black) {
-                System.out.println("merge " + b + ", " + tmp[1][i]);
-                merge(b, tmp[1][i]);
-            }
-        }
-
-        System.out.println("---");
-
-        for(int i = tmp[0].length - 1; i >= 0; i--) {
-            int b = getBrother(tmp[0][i]);
-            if(getColor(b) != Color.White && b == i1) {
-                System.out.println("merge " + b + ", " + tmp[0][i]);
-                merge(b, tmp[0][i]);
-            }
-        }
+        removeSameColorNodes();
     }
 
     private int[] zeros() {
@@ -650,7 +634,6 @@ public class GraphBW implements IGraph {
         for(int i = nbVertices() - 1; i >= 0; i--) {
             for (int j = 0; j < nbVertices(); j++) {
                 if(getColor(i) == getColor(j) && i != j && (getEdgeCount(i, j) != 0 || getEdgeCount(j, i) != 0)) {
-                    System.out.println(i + " -> " + j);
                     merge(i, j);
                     break;
                 }
