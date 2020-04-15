@@ -1,7 +1,7 @@
 #!/bin/bash
 
-IN="../dot/"
-OUT="./"
+IN="./dot/"
+OUT="./png/"
 
 if [ ! -d "$IN" ]; then
   echo "input directory not found: $IN"
