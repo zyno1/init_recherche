@@ -461,16 +461,18 @@ public class GraphBW implements IGraph {
     }
 
     public void addEntries(int i1, int i2) throws InvalidOperationException {
-        if(getColor(i1) == Color.Black) {
+        if(getColor(i1) == Color.Black || getColor(i2) == Color.White || getEdgeCount(i2, i1) < 1) {
             throw new InvalidOperationException();
         }
-        removeEdges(i2, i1, 1);
 
-        int[] e = getIndirectEntries(i2);
+        int[] i2exit = getExits(i2);
+        i2exit[i1] -= 1;
+        split(i2, i2exit);
 
-        for(int j = 0; j < nbVertices(); j++) {
-            addEdges(j, i1, e[j]);
-        }
+        int i2b = getBrother(i2);
+        r3(i2b, i2);
+
+        removeSameColorNodes();
     }
 
     public int getBrother(int i) {
@@ -509,14 +511,7 @@ public class GraphBW implements IGraph {
         split(i2, i2entries);
 
         int i2b = getBrother(i2);
-        int[][] tmp = r3(i2, i2b);
-
-        if(i2b < i1) {
-            i1--;
-        }
-        if(i2 < i1) {
-            i1--;
-        }
+        r3(i2, i2b);
 
         removeSameColorNodes();
     }

@@ -27,12 +27,19 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
         //Graph g = GraphIO.loadFromFile("tests/g1.txt");
-        GraphBW g = GraphBWIO.loadFromFile("tests/g6.txt");
+        GraphBW g = GraphBWIO.loadFromFile("tests/g1.txt");
 
         GraphBWIO.writeToDotFile(g, "dot/r0.dot");
 
         //g.removeSameColorNodes();
-        g.addExits(15, 5);
+        //g.addExits(15, 5);
+        //int i1 = 2;
+        //int i2 = 4;
+        //int[] i2exit = g.getExits(i2);
+        //i2exit[i1] -= 1;
+        //g.split(i2, i2exit);
+
+        g.addEntries(2, 4);
 
         GraphBWIO.writeToDotFile(g, "dot/r1.dot");
 
