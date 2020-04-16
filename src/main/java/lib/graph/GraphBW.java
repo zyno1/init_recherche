@@ -631,18 +631,37 @@ public class GraphBW implements IGraph {
             throw new InvalidOperationException();
         }
 
-        int[] toSub = getIndirectEntries(i2);
-        toSub[i2] -= 1;
+        int i2b = getBrother(i2);
+
         for(int j = 0; j < nbVertices(); j++) {
-            if(getEdgeCount(j, i1) < toSub[j]) {
-                System.out.println(j + " -> " + i1);
+            if(getEdgeCount(j, i1) < getEdgeCount(j, i2b)) {
                 throw new InvalidOperationException();
             }
         }
 
-        for(int j = 0; j < nbVertices(); j++) {
-            removeEdges(j, i1, toSub[j]);
+        int[] mask = zeros();
+        mask[i1] = 1;
+        mask[i2b] = 1;
+
+        int first = nbVertices();
+        for (int i = 0; i < first; i++) {
+            while (getEdgeCount(i, i2b) > 0) {
+                split(i, mask);
+            }
         }
+
+        int[] b = new int[nbVertices() - first];
+        int[] w = new int[2];
+        mask = zeros();
+        w[0] = i2b;
+        for (int i = 0; i < b.length; i++) {
+            b[i] = i + first;
+            mask[i + first] = 1;
+        }
+        w[1] = split(i1, mask);
+
+        r3(b, w);
+        removeSameColorNodes();
     }
 
     public void removeSameColorNodes() throws InvalidOperationException {

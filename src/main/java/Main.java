@@ -31,25 +31,12 @@ public class Main {
 
         GraphBWIO.writeToDotFile(g, "dot/r0.dot");
 
-        g.addExits(4, 2);
+        g.addEntries(2, 4);
 
         GraphBWIO.writeToDotFile(g, "dot/r1.dot");
 
         //g.addExits(15, 5);
-        /*int i1 = 3;
-        int i2 = 6;
-        int i2b = g.getBrother(i2);
-        int[] tmp = new int[g.nbVertices()];
-        tmp[i1] = 1;
-        tmp[i2b] = 1;
-        int[] w = new int[1];
-        int[] b = new int[2];
-        w[0] = g.split(2, tmp);
-        b[0] = g.addNodeOnEdge(i1, w[0], Color.Black);
-        b[1] = i2b;
-        g.r3(b, w);
-        g.removeSameColorNodes();*/
-        g.subExits(3, 6);
+        g.subEntries(1, 6);
 
         GraphBWIO.writeToDotFile(g, "dot/r2.dot");
 
