@@ -26,24 +26,26 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g8.txt");
+        Graph g = GraphIO.loadFromFile("tests/g1.txt");
         //GraphBW g = GraphBWIO.loadFromFile("tests/g1.txt");
+        GraphBW gbw = GraphBW.fromGraph(g);
 
-        GraphIO.printGraph(g);
+        //GraphIO.printGraph(g);
+        g.removeLooplessNodes();
+        //GraphIO.printGraph(g);
+        //GraphBWIO.printGraph(GraphBW.fromGraph(g));
+        GraphBWIO.writeToDotFile(GraphBW.fromGraph(g), "dot/r0.dot");
 
-        System.out.println(g.reduce(1, 0, 2));
-        System.out.println(g.reduce(1, 2, 0));
-        //g.removeLooplessNodes();
-        g.reduce(1, 0, 2);
-        g.reduce(0, 2, 1);
-        g.reduce(1, 0, 1);
-        g.reduce(0, 1, 2);
-        //g.reduce(0, 0, 1);
-        //g.reduce(0, 2, 1);
-        //g.reduce(0, 1, 2);
-        //g.reduce(0, 0, 2);
-        //g.reduce(2, 1, 2);
+        //gbw.addEntries(3, 6);
+        //gbw.removeNode(7);
+        //gbw.removeNode(6);
+        //gbw.addEntries(0, 4);
+        //gbw.removeNode(5);
+        //gbw.removeNode(4);
 
-        GraphIO.printGraph(g);
+        gbw.removeLooplessNodes();
+
+        GraphBWIO.writeToDotFile(gbw, "dot/r1.dot");
+        //GraphBWIO.printGraph(gbw);
     }
 }

@@ -598,4 +598,48 @@ public class GraphBW implements IGraph {
             }
         }
     }
+
+    public void removeLooplessNodes() throws InvalidOperationException {
+        for(int j = nbVertices() - 1; j >= 0; j--) {
+            int jb = j;
+            int jw = getBrother(j);
+
+            if(jw == -1) {
+                continue;
+            }
+
+            if(getColor(jw) != Color.White) {
+                int tmp = jw;
+                jw = jb;
+                jb = tmp;
+            }
+
+            if(getEdgeCount(jb, jw) == 0) {
+                int se = Calcul.sum(getEntries(jw));
+                int sx = Calcul.sum(getExits(jb));
+
+                if(se == 0 || sx == 0) {
+                    removeNode(Math.max(jb, jw));
+                    removeNode(Math.min(jb, jw));
+                }
+                else {
+                    for (int i = 0; i < nbVertices(); i++) {
+                        if (se > sx) {
+                            if (getEdgeCount(jb, i) > 0) {
+                                addEntries(i, jb);
+                                break;
+                            }
+                        } else {
+                            if (getEdgeCount(i, jw) > 0) {
+                                addExits(i, jw);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                j = nbVertices() - 1;
+            }
+        }
+    }
 }
