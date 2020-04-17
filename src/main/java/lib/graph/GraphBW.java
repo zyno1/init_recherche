@@ -493,14 +493,6 @@ public class GraphBW implements IGraph {
         return -1;
     }
 
-    private void correction(int removed, int[] list) {
-        for(int i = 0; i < list.length; i++) {
-            if(removed < list[i]) {
-                list[i]--;
-            }
-        }
-    }
-
     public void addExits(int i1, int i2) throws InvalidOperationException {
         if(getColor(i2) == Color.Black || getColor(i1) == Color.White || getEdgeCount(i1, i2) < 1) {
             throw new InvalidOperationException();
@@ -518,74 +510,6 @@ public class GraphBW implements IGraph {
 
     private int[] zeros() {
         return new int[nbVertices()];
-    }
-
-    private int[] getIndirectEntries(int i) {
-        int[] entries = zeros();
-
-        Queue<Integer> q = new ArrayDeque(nbVertices());
-
-        for(int j = 0; j < nbVertices(); j++) {
-            int n = getEdgeCount(j, i);
-
-            if(n != 0 && getColor(j) == Color.White) {
-                q.add(j); //note: if j is black then n = 1
-            }
-            else {
-                entries[j] += n;
-            }
-        }
-
-        while (!q.isEmpty()) {
-            int j = q.remove();
-
-            for(int k = 0; k < nbVertices(); k++) {
-                int n = getEdgeCount(k, j);
-
-                if(n != 0 && getColor(k) == Color.White) {
-                    q.add(k);
-                }
-                else {
-                    entries[k] += n;
-                }
-            }
-        }
-
-        return entries;
-    }
-
-    private int[] getInderectExits(int i) {
-        int[] exits = zeros();
-
-        Queue<Integer> q = new ArrayDeque(nbVertices());
-
-        for(int j = 0; j < nbVertices(); j++) {
-            int n = getEdgeCount(i, j);
-
-            if(n != 0 && getColor(j) == Color.Black) {
-                q.add(j); //note: if j is black then n = 1
-            }
-            else {
-                exits[j] += n;
-            }
-        }
-
-        while (!q.isEmpty()) {
-            int j = q.remove();
-
-            for(int k = 0; k < nbVertices(); k++) {
-                int n = getEdgeCount(j, k);
-
-                if(n != 0 && getColor(k) == Color.Black) {
-                    q.add(k);
-                }
-                else {
-                    exits[k] += n;
-                }
-            }
-        }
-
-        return exits;
     }
 
     public void subExits(int i1, int i2) throws InvalidOperationException {
