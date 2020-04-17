@@ -21,6 +21,7 @@ import lib.graph.io.GraphIO;
 import lib.math.Calcul;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Graph implements IGraph {
@@ -398,31 +399,59 @@ public class Graph implements IGraph {
         }
     }
 
-    public void reduce(int line, int min, int dst) throws InvalidOperationException {
-        int[] minEntries = getEntriesWithoutIdentity(min);
-        int[] dstEntries = getEntriesWithoutIdentity(dst);
+    private boolean testSub(int i1, int i2) {
+        for (int j = 0; j < nbVertices(); j++) {
+            if(getEdgeCount(j, i1) < getEdgeCount(j, i2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int reduce(int line, int min, int dst) throws InvalidOperationException {
+        int[] minEntries = getEntries(min);
+        int[] dstEntries = getEntries(dst);
 
         int nb = dstEntries[line] / minEntries[line];
 
-        for(int i = 0; i < nbVertices(); i++) {
+        for(int i = 0; i < nbVertices() && nb > 0; i++) {
             if(minEntries[i] * nb > dstEntries[i]) {
                 double k = Math.ceil((double)(nb * minEntries[i] - dstEntries[i]) / (dstEntries[line] - minEntries[line] * nb));
 
-                /*
-                des fois le coeff k = +infini, du coup ça termine pas toujours
-                 */
+                while (k >= Double.MAX_VALUE || (getEdgeCount(i, line) < k && getEdgeCount(line, line) == 0)) {
+                    nb--;
 
-                while (k > 0) {
-                    addExits(i, line);
-                    k--;
+                    if(nb == 0) {
+                        break;
+                    }
+
+                    k = Math.ceil((double)(nb * minEntries[i] - dstEntries[i]) / (dstEntries[line] - minEntries[line] * nb));
+                }
+
+                if(getEdgeCount(i, line) < 1) {
+                    nb = 0;
                 }
             }
         }
 
-        while (nb > 0) {
-            subEntries(dst, min);
-            nb--;
+        if(nb != 0) {
+            for (int i = 0; i < nbVertices(); i++) {
+                if(minEntries[i] * nb > dstEntries[i]) {
+                    double k = Math.ceil((double)(nb * minEntries[i] - dstEntries[i]) / (dstEntries[line] - minEntries[line] * nb));
+
+                    while (k > 0) {
+                        addExits(i, line);
+                        k--;
+                    }
+                }
+            }
+
+            for(int i = 0; i < nb && testSub(dst, min); i++) {
+                subEntries(dst, min);
+            }
         }
+
+        return nb;
     }
 
     public void putZeroOnLines() throws InvalidOperationException {
