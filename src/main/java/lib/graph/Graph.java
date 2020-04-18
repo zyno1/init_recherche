@@ -408,6 +408,29 @@ public class Graph implements IGraph {
         return true;
     }
 
+    public void reduceAll() throws InvalidOperationException{
+        for(int i=nbVertices()-1; i>=0; i--){
+            reduceLine(i);
+        }
+    }
+
+    public void reduceLine(int line) throws InvalidOperationException {
+        int[] exits = getExits(line);
+        int min =-1;
+        for(int i=0; i<nbVertices(); i++){
+            if(exits[i]!=0){
+                if(min==-1 || exits[i]<exits[min]){
+                    min=i;
+                }
+            }
+        }
+        for(int i=nbVertices()-1; i>=0; i--){
+            if(exits[i]!=0 && i!=min){
+                reduce(line, min ,i);
+            }
+        }
+    }
+
     public int reduce(int line, int min, int dst) throws InvalidOperationException {
         int[] minEntries = getEntries(min);
         int[] dstEntries = getEntries(dst);
@@ -454,6 +477,7 @@ public class Graph implements IGraph {
         return nb;
     }
 
+
     public void putZeroOnLines() throws InvalidOperationException {
         for (int j = nbVertices() - 1; j >= 0; j--) {
             int out[] = getExitsWithoutIdentity(j);
@@ -479,16 +503,17 @@ public class Graph implements IGraph {
                                     int c = getEdgeCountWithoutIdentity(l, i);
                                     int d = getEdgeCountWithoutIdentity(l, min);
 
-                                    while (c-d<0) {
+                                    while (c<d) {
                                         c += a;
                                         d += b;
+                                        GraphIO.printGraph(this);
                                         addExits(l, j);
                                     }
                                 }
                             }
                             subEntries(i,min);
                             a = getEdgeCountWithoutIdentity(j, i);
-                            b = getEdgeCountWithoutIdentity(j, i);
+                            b = getEdgeCountWithoutIdentity(j, min);
                         }
 
                         if(a==b) {
