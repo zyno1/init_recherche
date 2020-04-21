@@ -409,27 +409,63 @@ public class Graph implements IGraph {
     }
 
     public void reduceAll() throws InvalidOperationException{
-        for(int i=nbVertices()-1; i>=0; i--){
+        for(int i=nbVertices()-1; i>=0; i--) {
             reduceLine(i);
         }
     }
 
     public void reduceLine(int line) throws InvalidOperationException {
-        int[] exits = getExits(line);
-        int min =-1;
-        for(int i=0; i<nbVertices(); i++){
-            if(exits[i]!=0){
-                if(min==-1 || exits[i]<exits[min]){
-                    min=i;
+        boolean continu = true;
+        while(continu) {
+            int[] exits = getExitsWithoutIdentity(line);
+            int min = -1;
+            int max = -1;
+            for (int i = 0; i < nbVertices(); i++) {
+                if (exits[i] != 0) {
+                    if (min == -1 || exits[i] < exits[min]) {
+                        min = i;
+                    }
                 }
             }
-        }
-        for(int i=nbVertices()-1; i>=0; i--){
-            if(exits[i]!=0 && i!=min){
-                reduce(line, min ,i);
+            for (int i = 0; i < nbVertices(); i++) {
+                if (exits[i] != 0 && i != min) {
+                    if (max == -1 || exits[i] > exits[max]) {
+                        max = i;
+                    }
+                }
+            }
+            if(max!=-1) {
+                /*System.out.println(exits[min]+ " "+ exits[max]);
+                if(exits[min]<1){
+                    GraphIO.printGraph(this);
+                }*/
+                int old = exits[max];
+                reduce(line, min, max);
+
+                if(getEdgeCountWithoutIdentity(line, max)==old){
+                    continu=false;
+                }
+
+                int oldsize = nbVertices();
+                removeLooplessNodes();
+                if(oldsize!=nbVertices()){
+                    continu=false;
+                }
+            }
+            else{
+                continu = false;
             }
         }
+        /*if(min!=-1) {
+            for (int i = nbVertices() - 1; i >= 0; i--) {
+                if (exits[i] != 0 && i != min && getEdgeCountWithoutIdentity(line, min)>0) {
+                    System.out.println(line+" "+min+" "+i);
+                    reduce(line, min, i);
+                }
+            }
+        }*/
     }
+
 
     public int reduce(int line, int min, int dst) throws InvalidOperationException {
         int[] minEntries = getEntries(min);
@@ -506,7 +542,7 @@ public class Graph implements IGraph {
                                     while (c<d) {
                                         c += a;
                                         d += b;
-                                        GraphIO.printGraph(this);
+                                        //GraphIO.printGraph(this);
                                         addExits(l, j);
                                     }
                                 }
