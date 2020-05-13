@@ -149,7 +149,9 @@ public class GraphBW implements IGraph {
         return nb - 1;
     }
 
-    public void removeNode(int i) {
+    public void removeNode(List<GraphBW> gc, int i) {
+        gc.add(this.clone());
+
         for(int j = 0; j < nb; j++) {
             data.remove(i * nb);
         }
@@ -180,9 +182,9 @@ public class GraphBW implements IGraph {
         return res;
     }
 
-    //public int split(Collection<GraphBW> gc, int i1, int... split) throws InvalidOperationException {
-    public int split(int i1, int... split) throws InvalidOperationException {
-        //gc.add(this.clone());
+    public int split(List<GraphBW> gc, int i1, int... split) throws InvalidOperationException {
+    //public int split(int i1, int... split) throws InvalidOperationException {
+        gc.add(this.clone());
 
         int[] entries = getEntries(i1);
         //int[] exits = getExits(i);
@@ -233,7 +235,7 @@ public class GraphBW implements IGraph {
         return i2;
     }
 
-    public void merge(int i1, int i2) throws InvalidOperationException {
+    public void merge(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(i1 > i2) {
             int tmp = i1;
             i1 = i2;
@@ -250,6 +252,8 @@ public class GraphBW implements IGraph {
         if (getEdgeCount(i1, i2) == 0 && getEdgeCount(i2, i1) == 0) {
             throw new InvalidOperationException();
         }
+
+        gc.add(this.clone());
 
         if(getEdgeCount(i1, i2) == 1) {
             setEdgeCount(i1, i2, 0);
@@ -281,14 +285,16 @@ public class GraphBW implements IGraph {
             }
         }
 
-        removeNode(i2);
+        removeNode(gc, i2);
     }
 
-    public int addNodeOnEdge(int i1, int i2, Color c) throws InvalidOperationException {
+    public int addNodeOnEdge(List<GraphBW> gc, int i1, int i2, Color c) throws InvalidOperationException {
         int nb = getEdgeCount(i1, i2);
         if(nb < 1) {
             throw new InvalidOperationException();
         }
+
+        gc.add(this.clone());
 
         int i3 = addNode(c);
 
@@ -300,13 +306,15 @@ public class GraphBW implements IGraph {
         return i3;
     }
 
-    public void removeNodeOnEdge(int i) throws InvalidOperationException {
+    public void removeNodeOnEdge(List<GraphBW> gc, int i) throws InvalidOperationException {
         int[] entries = getEntries(i);
         int[] exits = getExits(i);
 
         if(Calcul.sum(entries) != 1 || Calcul.sum(exits) != 1) {
             throw new InvalidOperationException();
         }
+
+        gc.add(this.clone());
 
         int i1 = -1;
         int i2 = -1;
@@ -324,16 +332,18 @@ public class GraphBW implements IGraph {
         removeEdges(i, i2, 1);
 
         addEdges(i1, i2, 1);
-        removeNode(i);
+        removeNode(gc, i);
     }
 
-    public int[][] r3(final int i1, final int i2) throws InvalidOperationException {
+    public int[][] r3(List<GraphBW> gc, final int i1, final int i2) throws InvalidOperationException {
         int[] i1exit = getExits(i1);
         int[] i2entries = getEntries(i2);
 
         if(getColor(i1) != Color.White || getColor(i2) != Color.Black || getEdgeCount(i1, i2) != 1) {
             throw new InvalidOperationException();
         }
+
+        gc.add(this.clone());
 
         int first = nbVertices();
         int entry = 0;
@@ -373,12 +383,12 @@ public class GraphBW implements IGraph {
         }
 
         if(i1 > i2) {
-            removeNode(i1);
-            removeNode(i2);
+            removeNode(gc, i1);
+            removeNode(gc, i2);
         }
         else {
-            removeNode(i2);
-            removeNode(i1);
+            removeNode(gc, i2);
+            removeNode(gc, i1);
         }
 
         for (int i = 0; i < entry; i++) {
@@ -400,7 +410,7 @@ public class GraphBW implements IGraph {
         return false;
     }
 
-    public void r3(int[] entry, int[] exit) throws InvalidOperationException {
+    public void r3(List<GraphBW> gc, int[] entry, int[] exit) throws InvalidOperationException {
         for(int ei = 0; ei < nbVertices(); ei++) {
             for(int xi = 0; xi < nbVertices(); xi++) {
                 int n = getEdgeCount(ei, xi);
@@ -427,6 +437,8 @@ public class GraphBW implements IGraph {
                 throw new InvalidOperationException();
             }
         }
+
+        gc.add(this.clone());
 
         int i1 = addNode(Color.White);
         int i2 = addNode(Color.Black);
@@ -458,35 +470,35 @@ public class GraphBW implements IGraph {
             if(i >= 0) {
                 if(j >= 0) {
                     if(entry[i] > exit[j]) {
-                        removeNode(entry[i--]);
+                        removeNode(gc, entry[i--]);
                     }
                     else {
-                        removeNode(exit[j--]);
+                        removeNode(gc, exit[j--]);
                     }
                 }
                 else {
-                    removeNode(entry[i--]);
+                    removeNode(gc, entry[i--]);
                 }
             }
             else {
-                removeNode(exit[j--]);
+                removeNode(gc, exit[j--]);
             }
         }
     }
 
-    public void addEntries(int i1, int i2) throws InvalidOperationException {
+    public void addEntries(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(getColor(i1) == Color.Black || getColor(i2) == Color.White || getEdgeCount(i2, i1) < 1) {
             throw new InvalidOperationException();
         }
 
         int[] i2exit = getExits(i2);
         i2exit[i1] -= 1;
-        split(i2, i2exit);
+        split(gc, i2, i2exit);
 
         int i2b = getBrother(i2);
-        r3(i2b, i2);
+        r3(gc, i2b, i2);
 
-        removeSameColorNodes();
+        removeSameColorNodes(gc);
     }
 
     public int getBrother(int i) {
@@ -507,26 +519,26 @@ public class GraphBW implements IGraph {
         return -1;
     }
 
-    public void addExits(int i1, int i2) throws InvalidOperationException {
+    public void addExits(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(getColor(i2) == Color.Black || getColor(i1) == Color.White || getEdgeCount(i1, i2) < 1) {
             throw new InvalidOperationException();
         }
 
         int[] i2entries = getEntries(i2);
         i2entries[i1] -= 1;
-        split(i2, i2entries);
+        split(gc, i2, i2entries);
 
         int i2b = getBrother(i2);
-        r3(i2, i2b);
+        r3(gc, i2, i2b);
 
-        removeSameColorNodes();
+        removeSameColorNodes(gc);
     }
 
     private int[] zeros() {
         return new int[nbVertices()];
     }
 
-    public void subExits(int i1, int i2) throws InvalidOperationException {
+    public void subExits(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(getColor(i1) == Color.White) {
             throw new InvalidOperationException();
         }
@@ -546,7 +558,7 @@ public class GraphBW implements IGraph {
 
         for(int i = 0; i < first; i++) {
             while (getEdgeCount(i2b, i) > 0) {
-                split(i, mask);
+                split(gc, i, mask);
             }
         }
 
@@ -558,13 +570,13 @@ public class GraphBW implements IGraph {
             w[i] = i + first;
             mask[i + first] = 1;
         }
-        b[0] = split(i1, mask);
+        b[0] = split(gc, i1, mask);
 
-        r3(b, w);
-        removeSameColorNodes();
+        r3(gc, b, w);
+        removeSameColorNodes(gc);
     }
 
-    public void subEntries(int i1, int i2) throws InvalidOperationException {
+    public void subEntries(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(getColor(i1) == Color.Black) {
             throw new InvalidOperationException();
         }
@@ -584,7 +596,7 @@ public class GraphBW implements IGraph {
         int first = nbVertices();
         for (int i = 0; i < first; i++) {
             while (getEdgeCount(i, i2b) > 0) {
-                split(i, mask);
+                split(gc, i, mask);
             }
         }
 
@@ -596,24 +608,24 @@ public class GraphBW implements IGraph {
             b[i] = i + first;
             mask[i + first] = 1;
         }
-        w[1] = split(i1, mask);
+        w[1] = split(gc, i1, mask);
 
-        r3(b, w);
-        removeSameColorNodes();
+        r3(gc, b, w);
+        removeSameColorNodes(gc);
     }
 
-    public void removeSameColorNodes() throws InvalidOperationException {
+    public void removeSameColorNodes(List<GraphBW> gc) throws InvalidOperationException {
         for(int i = nbVertices() - 1; i >= 0; i--) {
             for (int j = 0; j < nbVertices(); j++) {
                 if(getColor(i) == getColor(j) && i != j && (getEdgeCount(i, j) != 0 || getEdgeCount(j, i) != 0)) {
-                    merge(i, j);
+                    merge(gc, i, j);
                     break;
                 }
             }
         }
     }
 
-    public void removeLooplessNodes() throws InvalidOperationException {
+    public void removeLooplessNodes(List<GraphBW> gc) throws InvalidOperationException {
         for(int j = nbVertices() - 1; j >= 0; j--) {
             int jb = j;
             int jw = getBrother(j);
@@ -633,19 +645,19 @@ public class GraphBW implements IGraph {
                 int sx = Calcul.sum(getExits(jb));
 
                 if(se == 0 || sx == 0) {
-                    removeNode(Math.max(jb, jw));
-                    removeNode(Math.min(jb, jw));
+                    removeNode(gc, Math.max(jb, jw));
+                    removeNode(gc, Math.min(jb, jw));
                 }
                 else {
                     for (int i = 0; i < nbVertices(); i++) {
                         if (se > sx) {
                             if (getEdgeCount(jb, i) > 0) {
-                                addEntries(i, jb);
+                                addEntries(gc, i, jb);
                                 break;
                             }
                         } else {
                             if (getEdgeCount(i, jw) > 0) {
-                                addExits(i, jw);
+                                addExits(gc, i, jw);
                                 break;
                             }
                         }

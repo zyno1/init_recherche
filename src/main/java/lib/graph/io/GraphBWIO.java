@@ -21,7 +21,10 @@ import lib.graph.Graph;
 import lib.graph.GraphBW;
 import lib.graph.IGraph;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
 
 public class GraphBWIO {
     public static GraphBW loadFromFile(String path) throws IOException {
@@ -52,6 +55,20 @@ public class GraphBWIO {
 
         out.flush();
         out.close();
+    }
+
+    public static void writeToDotFiles(List<GraphBW> gc, String folder) throws IOException {
+        folder = folder.trim();
+        if(folder.charAt(folder.length() - 1) != '/') {
+            folder += '/';
+        }
+
+        for(int i = 0; i < gc.size(); i++) {
+            GraphBW g = gc.get(i);
+
+            String path = folder + "r_" + i + ".dot";
+            writeToDotFile(g, path);
+        }
     }
 
     public static void writeToFile(IGraph g, String path) throws IOException {
