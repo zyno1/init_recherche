@@ -26,18 +26,8 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        Graph g = GraphIO.loadFromFile("tests/g9.txt");
-        //GraphBW g = GraphBWIO.loadFromFile("tests/g1.txt");
-        //GraphBW gbw = GraphBW.fromGraph(g);
+        GraphBW g = GraphBWIO.loadFromFile("tests/g0.txt");
 
-        GraphIO.printGraph(g);
-        g.removeLooplessNodes();
-        GraphIO.printGraph(g);
-        //g.reduce(5,6,7);
-        g.reduceAll();
-        GraphIO.printGraph(g);
-        //GraphBWIO.printGraph(GraphBW.fromGraph(g));
-        GraphBWIO.writeToDotFile(GraphBW.fromGraph(g), "dot/r0.dot");
 
         //gbw.addEntries(3, 6);
         //gbw.removeNode(7);

@@ -19,10 +19,7 @@ package lib.graph;
 import lib.exceptions.InvalidOperationException;
 import lib.math.Calcul;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Queue;
+import java.util.*;
 
 public class GraphBW implements IGraph {
     ArrayList<Integer> data;
@@ -41,6 +38,20 @@ public class GraphBW implements IGraph {
         for(int i = 0; i < n; i++) {
             colors.add(Color.White);
         }
+    }
+
+    public GraphBW clone() {
+        GraphBW g = new GraphBW(nbVertices());
+
+        for(int i = 0; i < nbVertices(); i++) {
+            g.colors.set(i, colors.get(i));
+        }
+
+        for(int i = 0; i < data.size(); i++) {
+            g.data.set(i, data.get(i));
+        }
+
+        return g;
     }
 
     public static GraphBW fromGraph(Graph g) {
@@ -169,7 +180,10 @@ public class GraphBW implements IGraph {
         return res;
     }
 
+    //public int split(Collection<GraphBW> gc, int i1, int... split) throws InvalidOperationException {
     public int split(int i1, int... split) throws InvalidOperationException {
+        //gc.add(this.clone());
+
         int[] entries = getEntries(i1);
         //int[] exits = getExits(i);
         int i2 = addNode(getColor(i1));
