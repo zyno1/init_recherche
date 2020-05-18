@@ -16,13 +16,9 @@ limitations under the License.
 
 import lib.exceptions.InvalidOperationException;
 import lib.graph.GraphB;
-import lib.graph.GraphBW;
 import lib.graph.io.GraphBIO;
-import lib.graph.io.GraphBWIO;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
