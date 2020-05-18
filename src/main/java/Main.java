@@ -15,7 +15,9 @@ limitations under the License.
 */
 
 import lib.exceptions.InvalidOperationException;
+import lib.graph.GraphB;
 import lib.graph.GraphBW;
+import lib.graph.io.GraphBIO;
 import lib.graph.io.GraphBWIO;
 
 import java.io.IOException;
@@ -24,13 +26,17 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        GraphBW g = GraphBWIO.loadFromFile("tests/g2.txt");
+        GraphB g = GraphBIO.loadFromFile("tests/g6.txt");
 
-        List<GraphBW> gc = new ArrayList<>();
-        g.removeLooplessNodes(gc);
-        gc.add(g.clone());
+        g.split_r2_entries(4, 0, 1, 1);
+        g.split_r2_entries(4, 0, 0, 1, 2);
 
-        GraphBWIO.writeToDotFiles(gc, "dot/");
+        g.split_entry(4);
+
+        g.merge(4, 5);
+        g.merge(4, 12);
+
+        GraphBIO.writeToDotFile(g, "dot/r0.dot");
 
         //gbw.addEntries(3, 6);
         //gbw.removeNode(7);

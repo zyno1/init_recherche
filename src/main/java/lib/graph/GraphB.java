@@ -190,7 +190,7 @@ public class GraphB implements IGraph {
         else {
             boolean enEq = true;
             boolean exEq = true;
-            for(int i = 0; i < nbVertices() && enEq && exEq; i++) {
+            for(int i = 0; i < nbVertices() && (enEq || exEq); i++) {
                 enEq = enEq && getEdgeCount(i, i1) == getEdgeCount(i, i2);
                 exEq = exEq && getEdgeCount(i1, i) == getEdgeCount(i2, i);
             }
