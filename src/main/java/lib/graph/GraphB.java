@@ -86,7 +86,7 @@ public class GraphB implements IGraph {
         nb--;
     }
 
-    public int splitExits(int i1, int... split) throws InvalidOperationException {
+    public int split_r2_2xits(int i1, int... split) throws InvalidOperationException {
         for (int i = 0; i < nbVertices() && i < split.length; i++) {
             if(getEdgeCount(i1, i) < split[i]) {
                 throw new InvalidOperationException();
@@ -104,7 +104,7 @@ public class GraphB implements IGraph {
         return i2;
     }
 
-    public int splitEntries(int i1, int... split) throws InvalidOperationException {
+    public int split_r2_entries(int i1, int... split) throws InvalidOperationException {
         for (int i = 0; i < nbVertices() && i < split.length; i++) {
             if(getEdgeCount(i, i1) < split[i]) {
                 throw new InvalidOperationException();
@@ -205,5 +205,55 @@ public class GraphB implements IGraph {
                 throw new InvalidOperationException();
             }
         }
+    }
+
+    public int split_entry(int i1) throws InvalidOperationException {
+        if(Calcul.sum(getEntries(i1)) != 2) {
+            throw new InvalidOperationException();
+        }
+
+        int i2 = addNode();
+
+        boolean done = false;
+
+        for(int i = 0; i < nbVertices(); i++) {
+            int out = getEdgeCount(i1, i);
+
+            setEdgeCount(i2, i, out);
+
+            if(!done && getEdgeCount(i, i1) > 0) {
+                done = true;
+
+                removeEdges(i, i1, 1);
+                addEdges(i, i2, 1);
+            }
+        }
+
+        return i2;
+    }
+
+    public int split_exit(int i1) throws InvalidOperationException {
+        if(Calcul.sum(getExits(i1)) != 2) {
+            throw new InvalidOperationException();
+        }
+
+        int i2 = addNode();
+
+        boolean done = false;
+
+        for(int i = 0; i < nbVertices(); i++) {
+            int in = getEdgeCount(i, i1);
+
+            setEdgeCount(i, i2, in);
+
+            if(!done && getEdgeCount(i1, i) > 0) {
+                done = true;
+
+                removeEdges(i1, i, 1);
+                addEdges(i2, i, 1);
+            }
+        }
+
+        return i2;
     }
 }
