@@ -35,6 +35,14 @@ public class Main {
 
         g.merge(4, 5);
         g.merge(4, 12);
+        g.merge(4, 11);
+        g.merge(4, 10);
+        g.merge(4, 5);
+        g.merge(4, 7);
+        g.merge(5, 6);
+        g.merge(1, 6);
+        g.merge(1, 4);
+        g.merge(0, 2);
 
         GraphBIO.writeToDotFile(g, "dot/r0.dot");
 

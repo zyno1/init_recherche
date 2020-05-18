@@ -167,9 +167,11 @@ public class GraphB implements IGraph {
     public void merge(int i1, int i2) throws InvalidOperationException {
         if(getEdgeCount(i1, i2) == 1) {
             if(Calcul.sum(getExits(i1)) == 1) {
+                removeEdges(i1, i2, 1);
                 merge_r2(i1, i2);
             }
             else if(Calcul.sum(getEntries(i2)) == 1) {
+                removeEdges(i1, i2, 1);
                 merge_r2(i1, i2);
             }
             else {
@@ -178,9 +180,11 @@ public class GraphB implements IGraph {
         }
         else if(getEdgeCount(i2, i1) == 1) {
             if(Calcul.sum(getExits(i2)) == 1) {
+                removeEdges(i2, i1, 1);
                 merge_r2(i1, i2);
             }
             else if(Calcul.sum(getEntries(i1)) == 1) {
+                removeEdges(i2, i1, 1);
                 merge_r2(i1, i2);
             }
             else {
