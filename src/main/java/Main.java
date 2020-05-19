@@ -24,23 +24,12 @@ public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
         GraphB g = GraphBIO.loadFromFile("tests/g6.txt");
 
-        g.split_r2_entries(4, 0, 1, 1);
-        g.split_r2_entries(4, 0, 0, 1, 2);
-
-        g.split_entry(4);
-
-        g.merge(4, 5);
-        g.merge(4, 12);
-        g.merge(4, 11);
-        g.merge(4, 10);
-        g.merge(4, 5);
-        g.merge(4, 7);
-        g.merge(5, 6);
-        g.merge(1, 6);
-        g.merge(1, 4);
-        g.merge(0, 2);
-
         GraphBIO.writeToDotFile(g, "dot/r0.dot");
+
+        //g.addExits(4, 5);
+        g.addEntries(4, 1);
+
+        GraphBIO.writeToDotFile(g, "dot/r1.dot");
 
         //gbw.addEntries(3, 6);
         //gbw.removeNode(7);
