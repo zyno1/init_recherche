@@ -17,6 +17,7 @@ limitations under the License.
 import lib.exceptions.InvalidOperationException;
 import lib.graph.GraphB;
 import lib.graph.io.GraphBIO;
+import lib.math.Calcul;
 
 import java.io.IOException;
 
@@ -26,14 +27,18 @@ public class Main {
 
         GraphBIO.writeToDotFile(g, "dot/r0.dot");
 
+        //g.split_r2_exits(0, 1);
+        //g.merge(0, 1);
         //g.addExits(0, 2);
-        g.addEntries(2, 0);
+        //g.addEntries(2, 0);
 
         GraphBIO.writeToDotFile(g, "dot/r1.dot");
 
-
+        //g.merge(2, 1);
+        //g.merge(0, 1);
+        g.removeUselessNodes();
         //g.subExits(0, 2);
-        g.subEntries(2, 0);
+        //g.subEntries(2, 0);
         //g.addEntries(2, 0);
         //g.subEntries(2, 0);
 

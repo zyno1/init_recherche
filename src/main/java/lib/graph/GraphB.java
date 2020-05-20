@@ -125,18 +125,18 @@ public class GraphB implements IGraph {
     private void merge_r2(int i1, int i2) {
         int node = Math.min(i1, i2);
 
+        int loops = getEdgeCount(i1, i1) + getEdgeCount(i2, i2) + getEdgeCount(i1, i2) + getEdgeCount(i2, i1);
+
         for(int j = 0; j < nbVertices(); j++) {
             int in = getEdgeCount(j, i1) + getEdgeCount(j, i2);
             int out = getEdgeCount(i1, j) + getEdgeCount(i2, j);
 
-            if(node == j) {
-                setEdgeCount(j, node, Math.max(in, out));
-            }
-            else {
-                setEdgeCount(j, node, in);
-                setEdgeCount(node, j, out);
-            }
+            setEdgeCount(j, node, in);
+            setEdgeCount(node, j, out);
+
         }
+
+        setEdgeCount(node, node, loops);
 
         removeNode(Math.max(i1, i2));
     }
@@ -174,45 +174,41 @@ public class GraphB implements IGraph {
             if(Calcul.sum(getExits(i1)) == 1) {
                 removeEdges(i1, i2, 1);
                 merge_r2(i1, i2);
+                return;
             }
             else if(Calcul.sum(getEntries(i2)) == 1) {
                 removeEdges(i1, i2, 1);
                 merge_r2(i1, i2);
-            }
-            else {
-                throw new InvalidOperationException();
+                return;
             }
         }
-        else if(getEdgeCount(i2, i1) == 1) {
+        if(getEdgeCount(i2, i1) == 1) {
             if(Calcul.sum(getExits(i2)) == 1) {
                 removeEdges(i2, i1, 1);
                 merge_r2(i1, i2);
+                return;
             }
             else if(Calcul.sum(getEntries(i1)) == 1) {
                 removeEdges(i2, i1, 1);
                 merge_r2(i1, i2);
-            }
-            else {
-                throw new InvalidOperationException();
+                return;
             }
         }
-        else {
-            boolean enEq = true;
-            boolean exEq = true;
-            for(int i = 0; i < nbVertices() && (enEq || exEq); i++) {
-                enEq = enEq && getEdgeCount(i, i1) == getEdgeCount(i, i2);
-                exEq = exEq && getEdgeCount(i1, i) == getEdgeCount(i2, i);
-            }
+        boolean enEq = true;
+        boolean exEq = true;
+        for(int i = 0; i < nbVertices() && (enEq || exEq); i++) {
+            enEq = enEq && getEdgeCount(i, i1) == getEdgeCount(i, i2);
+            exEq = exEq && getEdgeCount(i1, i) == getEdgeCount(i2, i);
+        }
 
-            if(enEq) {
-                merge_on_entry(i1, i2);
-            }
-            else if(exEq) {
-                merge_on_exit(i1, i2);
-            }
-            else {
-                throw new InvalidOperationException();
-            }
+        if(enEq) {
+            merge_on_entry(i1, i2);
+        }
+        else if(exEq) {
+            merge_on_exit(i1, i2);
+        }
+        else {
+            throw new InvalidOperationException();
         }
     }
 
@@ -324,5 +320,34 @@ public class GraphB implements IGraph {
 
         merge(i2, p1);
         merge(i2, p2);
+    }
+
+    public void removeUselessNodes() {
+        for(int i = nbVertices() - 1; i >= 0; i--) {
+            if(Calcul.sum(getEntries(i)) == 1) {
+                for(int j = 0; j < nbVertices(); j++) {
+                    if(getEdgeCount(j, i) == 1) {
+                        try {
+                            merge(j, i);
+                        } catch (InvalidOperationException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+            }
+            else if(Calcul.sum(getExits(i)) == 1) {
+                for(int j = 0; j < nbVertices(); j++) {
+                    if(getEdgeCount(i, j) == 1) {
+                        try {
+                            merge(j, i);
+                        } catch (InvalidOperationException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
