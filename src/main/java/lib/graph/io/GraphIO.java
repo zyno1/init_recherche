@@ -22,6 +22,13 @@ import lib.graph.IGraph;
 import java.io.*;
 
 public class GraphIO {
+
+    /**
+     * Charge un graphe à partir d'un fichier TXT qui contient une matrice d'adjacence.
+     * @param path chemin du fichier à charger
+     * @return une instance de Graph qui représente le graphe chargé.
+     * @throws IOException
+     */
     public static Graph loadFromFile(String path) throws IOException {
         Graph res = null;
 
@@ -52,6 +59,12 @@ public class GraphIO {
         return res;
     }
 
+    /**
+     * Sauve le graphe g dans un fichier TXT.
+     * @param g une instance de IGraph
+     * @param path destination
+     * @throws IOException
+     */
     public static void writeToFile(IGraph g, String path) throws IOException {
         BufferedWriter out = new BufferedWriter(new FileWriter(path));
 
@@ -71,6 +84,12 @@ public class GraphIO {
         out.close();
     }
 
+    /**
+     * Sauve le graphe g dans un fichier DOT.
+     * @param g une instance de IGraph
+     * @param path destination
+     * @throws IOException
+     */
     public static void writeToDotFile(IGraph g, String path) throws IOException {
         BufferedWriter out = new BufferedWriter(new FileWriter(path));
 
@@ -90,6 +109,12 @@ public class GraphIO {
         out.close();
     }
 
+    /**
+     *
+     * @param c un caractère
+     * @param len un entier
+     * @return Une String composée du caractère c répété len fois.
+     */
     private static String repeat(char c, int len) {
         StringBuilder str = new StringBuilder(len);
 
@@ -100,10 +125,21 @@ public class GraphIO {
         return str.toString();
     }
 
+    /**
+     *
+     * @param len un entier
+     * @return Une String composée de len espaces.
+     */
     private static String spaces(int len) {
         return repeat(' ', len);
     }
 
+    /**
+     *
+     * @param num un entier
+     * @param len un entier
+     * @return Une String de taille len qui contient des espaces et le nombre num placé au millieu
+     */
     private static String wrap(int num, int len) {
         StringBuilder str = new StringBuilder(len);
 
@@ -115,6 +151,10 @@ public class GraphIO {
         return str.toString();
     }
 
+    /**
+     * affiche la matrice d'adjacence de g sur la sortie standard
+     * @param g une instance de IGraph
+     */
     public static void printGraph(IGraph g) {
         int maxValue = g.nbVertices() - 1;
 
