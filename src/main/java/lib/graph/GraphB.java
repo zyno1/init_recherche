@@ -270,7 +270,7 @@ public class GraphB implements IGraph {
             throw new InvalidOperationException();
         }
 
-        int[] i1exit = getExits(i1);
+        /*int[] i1exit = getExits(i1);
         i1exit[i2] -= 1;
         int p1 = split_r2_exits(i1, i1exit);
         int pp1 = split_exit(i1);
@@ -283,7 +283,15 @@ public class GraphB implements IGraph {
         merge(pp1, pp2);
         merge(i2, p2);
         merge(i1, pp1);
-        merge(i1, p1);
+        merge(i1, p1);*/
+
+        int[] i2entry = getEntries(i2);
+        i2entry[i1] -= 1;
+        int p2 = split_r2_entries(i2, i2entry);
+        int pp2 = split_entry(i2);
+
+        merge(i1, pp2);
+        merge(i2, p2);
     }
 
     public void addEntries(int i1, int i2) throws InvalidOperationException {
@@ -324,6 +332,20 @@ public class GraphB implements IGraph {
 
         int p2 = split_r2_exits(i2, getExits(i2));
         int p1 = split_r2_entries(i1, getEntries(i2));
+
+        merge(i2, p1);
+        merge(i2, p2);
+    }
+
+    public void subExits(int i1, int i2) throws InvalidOperationException {
+        for(int i = 0; i < nbVertices(); i++) {
+            if(getEdgeCount(i1, i) < getEdgeCount(i2, i)) {
+                throw new InvalidOperationException();
+            }
+        }
+
+        int p2 = split_r2_entries(i2, getEntries(i2));
+        int p1 = split_r2_exits(i1, getExits(i2));
 
         merge(i2, p1);
         merge(i2, p2);
