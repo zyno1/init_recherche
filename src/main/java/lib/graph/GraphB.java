@@ -129,8 +129,13 @@ public class GraphB implements IGraph {
             int in = getEdgeCount(j, i1) + getEdgeCount(j, i2);
             int out = getEdgeCount(i1, j) + getEdgeCount(i2, j);
 
-            setEdgeCount(j, node, in);
-            setEdgeCount(node, j, out);
+            if(node == j) {
+                setEdgeCount(j, node, Math.max(in, out));
+            }
+            else {
+                setEdgeCount(j, node, in);
+                setEdgeCount(node, j, out);
+            }
         }
 
         removeNode(Math.max(i1, i2));

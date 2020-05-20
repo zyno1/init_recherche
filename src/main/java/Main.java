@@ -26,12 +26,18 @@ public class Main {
 
         GraphBIO.writeToDotFile(g, "dot/r0.dot");
 
-        g.addExits(0, 2);
-        g.subExits(0, 2);
+        //g.addExits(0, 2);
+        g.addEntries(2, 0);
+
+        GraphBIO.writeToDotFile(g, "dot/r1.dot");
+
+
+        //g.subExits(0, 2);
+        g.subEntries(2, 0);
         //g.addEntries(2, 0);
         //g.subEntries(2, 0);
 
-        GraphBIO.writeToDotFile(g, "dot/r1.dot");
+        GraphBIO.writeToDotFile(g, "dot/r2.dot");
 
         //gbw.addEntries(3, 6);
         //gbw.removeNode(7);
