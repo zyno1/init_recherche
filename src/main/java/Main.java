@@ -22,12 +22,13 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
-        GraphB g = GraphBIO.loadFromFile("tests/g6.txt");
+        GraphB g = GraphBIO.loadFromFile("tests/g1.txt");
 
         GraphBIO.writeToDotFile(g, "dot/r0.dot");
 
         //g.addExits(4, 5);
-        g.addEntries(4, 1);
+        g.addEntries(2, 0);
+        g.subEntries(2, 0);
 
         GraphBIO.writeToDotFile(g, "dot/r1.dot");
 
