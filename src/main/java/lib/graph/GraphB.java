@@ -4,6 +4,7 @@ import lib.exceptions.InvalidOperationException;
 import lib.math.Calcul;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GraphB implements IGraph {
     ArrayList<Integer> data;
@@ -16,6 +17,16 @@ public class GraphB implements IGraph {
         for(int i = 0; i < n * n; i++) {
             data.add(0);
         }
+    }
+
+    public GraphB clone() {
+        GraphB g = new GraphB(nbVertices());
+
+        for(int i = 0; i < data.size(); i++) {
+            g.data.set(i, data.get(i));
+        }
+
+        return g;
     }
 
     @Override
@@ -76,7 +87,9 @@ public class GraphB implements IGraph {
         return nb - 1;
     }
 
-    public void removeNode(int i) {
+    public void removeNode(List<GraphB> gc, int i) {
+        gc.add(clone());
+
         for(int j = 0; j < nb; j++) {
             data.remove(i * nb);
         }
@@ -86,12 +99,14 @@ public class GraphB implements IGraph {
         nb--;
     }
 
-    public int split_r2_exits(int i1, int... split) throws InvalidOperationException {
+    public int split_r2_exits(List<GraphB> gc, int i1, int... split) throws InvalidOperationException {
         for (int i = 0; i < nbVertices() && i < split.length; i++) {
             if(getEdgeCount(i1, i) < split[i]) {
                 throw new InvalidOperationException();
             }
         }
+
+        gc.add(clone());
 
         int i2 = addNode();
         addEdges(i1, i2, 1);
@@ -104,12 +119,14 @@ public class GraphB implements IGraph {
         return i2;
     }
 
-    public int split_r2_entries(int i1, int... split) throws InvalidOperationException {
+    public int split_r2_entries(List<GraphB> gc, int i1, int... split) throws InvalidOperationException {
         for (int i = 0; i < nbVertices() && i < split.length; i++) {
             if(getEdgeCount(i, i1) < split[i]) {
                 throw new InvalidOperationException();
             }
         }
+
+        gc.add(clone());
 
         int i2 = addNode();
         addEdges(i2, i1, 1);
@@ -122,7 +139,7 @@ public class GraphB implements IGraph {
         return i2;
     }
 
-    private void merge_r2(int i1, int i2) {
+    private void merge_r2(List<GraphB> gc, int i1, int i2) {
         int node = Math.min(i1, i2);
 
         int loops = getEdgeCount(i1, i1) + getEdgeCount(i2, i2) + getEdgeCount(i1, i2) + getEdgeCount(i2, i1);
@@ -138,10 +155,10 @@ public class GraphB implements IGraph {
 
         setEdgeCount(node, node, loops);
 
-        removeNode(Math.max(i1, i2));
+        removeNode(gc, Math.max(i1, i2));
     }
 
-    private void merge_on_entry(int i1, int i2) {
+    private void merge_on_entry(List<GraphB> gc, int i1, int i2) {
         int node = Math.min(i1, i2);
 
         for(int j = 0; j < nbVertices(); j++) {
@@ -152,10 +169,10 @@ public class GraphB implements IGraph {
             setEdgeCount(node, j, out);
         }
 
-        removeNode(Math.max(i1, i2));
+        removeNode(gc, Math.max(i1, i2));
     }
 
-    private void merge_on_exit(int i1, int i2) {
+    private void merge_on_exit(List<GraphB> gc, int i1, int i2) {
         int node = Math.min(i1, i2);
 
         for(int j = 0; j < nbVertices(); j++) {
@@ -166,31 +183,35 @@ public class GraphB implements IGraph {
             setEdgeCount(node, j, out);
         }
 
-        removeNode(Math.max(i1, i2));
+        removeNode(gc, Math.max(i1, i2));
     }
 
-    public void merge(int i1, int i2) throws InvalidOperationException {
+    public void merge(List<GraphB> gc, int i1, int i2) throws InvalidOperationException {
         if(getEdgeCount(i1, i2) == 1) {
             if(Calcul.sum(getExits(i1)) == 1) {
+                gc.add(clone());
                 removeEdges(i1, i2, 1);
-                merge_r2(i1, i2);
+                merge_r2(gc, i1, i2);
                 return;
             }
             else if(Calcul.sum(getEntries(i2)) == 1) {
+                gc.add(clone());
                 removeEdges(i1, i2, 1);
-                merge_r2(i1, i2);
+                merge_r2(gc, i1, i2);
                 return;
             }
         }
         if(getEdgeCount(i2, i1) == 1) {
             if(Calcul.sum(getExits(i2)) == 1) {
+                gc.add(clone());
                 removeEdges(i2, i1, 1);
-                merge_r2(i1, i2);
+                merge_r2(gc, i1, i2);
                 return;
             }
             else if(Calcul.sum(getEntries(i1)) == 1) {
+                gc.add(clone());
                 removeEdges(i2, i1, 1);
-                merge_r2(i1, i2);
+                merge_r2(gc, i1, i2);
                 return;
             }
         }
@@ -202,20 +223,24 @@ public class GraphB implements IGraph {
         }
 
         if(enEq) {
-            merge_on_entry(i1, i2);
+            gc.add(clone());
+            merge_on_entry(gc, i1, i2);
         }
         else if(exEq) {
-            merge_on_exit(i1, i2);
+            gc.add(clone());
+            merge_on_exit(gc, i1, i2);
         }
         else {
             throw new InvalidOperationException();
         }
     }
 
-    public int split_entry(int i1) throws InvalidOperationException {
+    public int split_entry(List<GraphB> gc, int i1) throws InvalidOperationException {
         if(Calcul.sum(getEntries(i1)) != 2) {
             throw new InvalidOperationException();
         }
+
+        gc.add(clone());
 
         int i2 = addNode();
 
@@ -237,10 +262,12 @@ public class GraphB implements IGraph {
         return i2;
     }
 
-    public int split_exit(int i1) throws InvalidOperationException {
+    public int split_exit(List<GraphB> gc, int i1) throws InvalidOperationException {
         if(Calcul.sum(getExits(i1)) != 2) {
             throw new InvalidOperationException();
         }
+
+        gc.add(clone());
 
         int i2 = addNode();
 
@@ -266,69 +293,69 @@ public class GraphB implements IGraph {
         return new int[nb];
     }
 
-    public void addExits(int i1, int i2) throws InvalidOperationException {
+    public void addExits(List<GraphB> gc, int i1, int i2) throws InvalidOperationException {
         if(getEdgeCount(i1, i2) < 1) {
             throw new InvalidOperationException();
         }
 
         int[] i2entry = getEntries(i2);
         i2entry[i1] -= 1;
-        int p2 = split_r2_entries(i2, i2entry);
-        int pp2 = split_entry(i2);
+        int p2 = split_r2_entries(gc, i2, i2entry);
+        int pp2 = split_entry(gc, i2);
 
-        merge(i1, pp2);
-        merge(i2, p2);
+        merge(gc, i1, pp2);
+        merge(gc, i2, p2);
     }
 
-    public void addEntries(int i1, int i2) throws InvalidOperationException {
+    public void addEntries(List<GraphB> gc, int i1, int i2) throws InvalidOperationException {
         if(getEdgeCount(i2, i1) < 1) {
             throw new InvalidOperationException();
         }
 
         int[] i2exit = getExits(i2);
         i2exit[i1] -= 1;
-        int p2 = split_r2_exits(i2, i2exit);
-        int pp2 = split_exit(i2);
+        int p2 = split_r2_exits(gc, i2, i2exit);
+        int pp2 = split_exit(gc, i2);
 
-        merge(i1, pp2);
-        merge(i2, p2);
+        merge(gc, i1, pp2);
+        merge(gc, i2, p2);
     }
 
-    public void subEntries(int i1, int i2) throws InvalidOperationException {
+    public void subEntries(List<GraphB> gc, int i1, int i2) throws InvalidOperationException {
         for(int i = 0; i < nbVertices(); i++) {
             if(getEdgeCount(i, i1) < getEdgeCount(i, i2)) {
                 throw new InvalidOperationException();
             }
         }
 
-        int p2 = split_r2_exits(i2, getExits(i2));
-        int p1 = split_r2_entries(i1, getEntries(i2));
+        int p2 = split_r2_exits(gc, i2, getExits(i2));
+        int p1 = split_r2_entries(gc, i1, getEntries(i2));
 
-        merge(i2, p1);
-        merge(i2, p2);
+        merge(gc, i2, p1);
+        merge(gc, i2, p2);
     }
 
-    public void subExits(int i1, int i2) throws InvalidOperationException {
+    public void subExits(List<GraphB> gc, int i1, int i2) throws InvalidOperationException {
         for(int i = 0; i < nbVertices(); i++) {
             if(getEdgeCount(i1, i) < getEdgeCount(i2, i)) {
                 throw new InvalidOperationException();
             }
         }
 
-        int p2 = split_r2_entries(i2, getEntries(i2));
-        int p1 = split_r2_exits(i1, getExits(i2));
+        int p2 = split_r2_entries(gc, i2, getEntries(i2));
+        int p1 = split_r2_exits(gc, i1, getExits(i2));
 
-        merge(i2, p1);
-        merge(i2, p2);
+        merge(gc, i2, p1);
+        merge(gc, i2, p2);
     }
 
-    public void removeUselessNodes() {
+    public void removeUselessNodes(List<GraphB> gc) {
         for(int i = nbVertices() - 1; i >= 0; i--) {
             if(Calcul.sum(getEntries(i)) == 1) {
                 for(int j = 0; j < nbVertices(); j++) {
                     if(getEdgeCount(j, i) == 1) {
                         try {
-                            merge(j, i);
+                            merge(gc, j, i);
                         } catch (InvalidOperationException e) {
                             e.printStackTrace();
                         }
@@ -340,7 +367,7 @@ public class GraphB implements IGraph {
                 for(int j = 0; j < nbVertices(); j++) {
                     if(getEdgeCount(i, j) == 1) {
                         try {
-                            merge(j, i);
+                            merge(gc, j, i);
                         } catch (InvalidOperationException e) {
                             e.printStackTrace();
                         }
@@ -351,7 +378,7 @@ public class GraphB implements IGraph {
         }
     }
 
-    public void removeLooplessNodes() throws InvalidOperationException {
+    public void removeLooplessNodes(List<GraphB> gc) throws InvalidOperationException {
         for(int j = nbVertices() - 1; j >= 0; j--) {
             if(getEdgeCount(j, j) == 0) {
                 int se = Calcul.sum(getEntries(j));
@@ -360,17 +387,17 @@ public class GraphB implements IGraph {
                 for(int i = 0; i < nbVertices(); i++) {
                     if(se > sx) {
                         while (getEdgeCount(j, i) > 0) {
-                            addEntries(i, j);
+                            addEntries(gc, i, j);
                         }
                     }
                     else {
                         while (getEdgeCount(i, j) > 0) {
-                            addExits(i, j);
+                            addExits(gc, i, j);
                         }
                     }
                 }
 
-                removeNode(j);
+                removeNode(gc, j);
             }
         }
     }
@@ -441,9 +468,9 @@ public class GraphB implements IGraph {
      * Réduit le graphe en forme normale
      * @throws InvalidOperationException
      */
-    public void reduceAll() throws InvalidOperationException{
+    public void reduceAll(List<GraphB> gc) throws InvalidOperationException{
         for(int i=nbVertices()-1; i>=0; i--) {
-            reduceLine(i);
+            reduceLine(gc, i);
         }
     }
 
@@ -452,7 +479,7 @@ public class GraphB implements IGraph {
      * @param line ligne à réduire
      * @throws InvalidOperationException
      */
-    public void reduceLine(int line) throws InvalidOperationException {
+    public void reduceLine(List<GraphB> gc, int line) throws InvalidOperationException {
         boolean continu = true;
         while(continu) {
             int[] exits = getExitsWithoutIdentity(line);
@@ -478,14 +505,14 @@ public class GraphB implements IGraph {
                     GraphIO.printGraph(this);
                 }*/
                 int old = exits[max];
-                reduce(line, min, max);
+                reduce(gc, line, min, max);
 
                 if(getEdgeCountWithoutIdentity(line, max)==old){
                     continu=false;
                 }
 
                 int oldsize = nbVertices();
-                removeLooplessNodes();
+                removeLooplessNodes(gc);
                 if(oldsize!=nbVertices()){
                     continu=false;
                 }
@@ -514,7 +541,7 @@ public class GraphB implements IGraph {
      * @return nombre soustraction d'entrées de min sur dst effectués.
      * @throws InvalidOperationException
      */
-    public int reduce(int line, int min, int dst) throws InvalidOperationException {
+    public int reduce(List<GraphB> gc, int line, int min, int dst) throws InvalidOperationException {
         int[] minEntries = getEntries(min);
         int[] dstEntries = getEntries(dst);
 
@@ -546,14 +573,14 @@ public class GraphB implements IGraph {
                     double k = Math.ceil((double)(nb * minEntries[i] - dstEntries[i]) / (dstEntries[line] - minEntries[line] * nb));
 
                     while (k > 0) {
-                        addExits(i, line);
+                        addExits(gc, i, line);
                         k--;
                     }
                 }
             }
 
             for(int i = 0; i < nb && testSub(dst, min); i++) {
-                subEntries(dst, min);
+                subEntries(gc, dst, min);
             }
         }
 

@@ -15,40 +15,29 @@ limitations under the License.
 */
 
 import lib.exceptions.InvalidOperationException;
+import lib.graph.Graph;
 import lib.graph.GraphB;
 import lib.graph.io.GraphBIO;
 import lib.math.Calcul;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException, InvalidOperationException {
         GraphB g = GraphBIO.loadFromFile("tests/g1.txt");
-
-        GraphBIO.writeToDotFile(g, "dot/r0.dot");
 
         //g.split_r2_exits(0, 1);
         //g.merge(0, 1);
         //g.addExits(0, 2);
         //g.addEntries(2, 0);
 
-        g.removeLooplessNodes();
-
-        GraphBIO.printGraph(g);
-
-        GraphBIO.writeToDotFile(g, "dot/r1.dot");
-
-        //g.merge(2, 1);
-        //g.merge(0, 1);
-        g.reduceAll();
-
-        GraphBIO.printGraph(g);
-        //g.subExits(0, 2);
-        //g.subEntries(2, 0);
-        //g.addEntries(2, 0);
-        //g.subEntries(2, 0);
-
-        GraphBIO.writeToDotFile(g, "dot/r2.dot");
+        List<GraphB> gc = new ArrayList<>(20);
+        g.removeLooplessNodes(gc);
+        g.reduceAll(gc);
+        gc.add(g);
+        GraphBIO.writeToDotFiles(gc, "dot/");
 
         //gbw.addEntries(3, 6);
         //gbw.removeNode(7);
