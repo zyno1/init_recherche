@@ -32,11 +32,17 @@ public class Main {
         //g.addExits(0, 2);
         //g.addEntries(2, 0);
 
+        g.removeLooplessNodes();
+
+        GraphBIO.printGraph(g);
+
         GraphBIO.writeToDotFile(g, "dot/r1.dot");
 
         //g.merge(2, 1);
         //g.merge(0, 1);
-        g.removeUselessNodes();
+        g.reduceAll();
+
+        GraphBIO.printGraph(g);
         //g.subExits(0, 2);
         //g.subEntries(2, 0);
         //g.addEntries(2, 0);

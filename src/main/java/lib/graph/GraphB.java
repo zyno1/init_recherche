@@ -350,4 +350,213 @@ public class GraphB implements IGraph {
             }
         }
     }
+
+    public void removeLooplessNodes() throws InvalidOperationException {
+        for(int j = nbVertices() - 1; j >= 0; j--) {
+            if(getEdgeCount(j, j) == 0) {
+                int se = Calcul.sum(getEntries(j));
+                int sx = Calcul.sum(getExits(j));
+
+                for(int i = 0; i < nbVertices(); i++) {
+                    if(se > sx) {
+                        while (getEdgeCount(j, i) > 0) {
+                            addEntries(i, j);
+                        }
+                    }
+                    else {
+                        while (getEdgeCount(i, j) > 0) {
+                            addExits(i, j);
+                        }
+                    }
+                }
+
+                removeNode(j);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return un tableau res tel que res[j] est égal au nombre d'arrêtes de j vers i
+     * dans le graphe sans la matrice identité.
+     */
+    private int[] getEntriesWithoutIdentity(int i) {
+        int [] res = new int[nb];
+
+        for(int j = 0; j < nb; j++) {
+            res[j] = getEdgeCount(j, i);
+        }
+
+        res[i]--;
+
+        return res;
+    }
+
+    /**
+     *
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return un tableau res tel que res[j] est égal au nombre d'arrêtes de i vers j
+     * dans le graphe sans la matrice identité.
+     */
+    private int[] getExitsWithoutIdentity(int i) {
+        int[] res = new int[nb];
+
+        for(int j = 0; j < nb; j++) {
+            res[j] = getEdgeCount(i, j);
+        }
+        res[i]--;
+
+        return res;
+    }
+
+    /**
+     *
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @return le nombre d'arrêtes de i1 vers i2 dans la graphe sans la matrice identité.
+     */
+    private int getEdgeCountWithoutIdentity(int i1, int i2) {
+        int res = data.get(i1 * nb + i2);
+        if(i1==i2)res--;
+        return res;
+    }
+
+    /**
+     * Vérifie que l'on peut soustraire les entrées de i2 sur i1.
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @return True la soustraction est possible False sinon
+     */
+    private boolean testSub(int i1, int i2) {
+        for (int j = 0; j < nbVertices(); j++) {
+            if(getEdgeCount(j, i1) < getEdgeCount(j, i2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Réduit le graphe en forme normale
+     * @throws InvalidOperationException
+     */
+    public void reduceAll() throws InvalidOperationException{
+        for(int i=nbVertices()-1; i>=0; i--) {
+            reduceLine(i);
+        }
+    }
+
+    /**
+     * réduit une ligne de la matrice du graphe.
+     * @param line ligne à réduire
+     * @throws InvalidOperationException
+     */
+    public void reduceLine(int line) throws InvalidOperationException {
+        boolean continu = true;
+        while(continu) {
+            int[] exits = getExitsWithoutIdentity(line);
+            int min = -1;
+            int max = -1;
+            for (int i = 0; i < nbVertices(); i++) {
+                if (exits[i] != 0) {
+                    if (min == -1 || exits[i] < exits[min]) {
+                        min = i;
+                    }
+                }
+            }
+            for (int i = 0; i < nbVertices(); i++) {
+                if (exits[i] != 0 && i != min) {
+                    if (max == -1 || exits[i] > exits[max]) {
+                        max = i;
+                    }
+                }
+            }
+            if(max!=-1) {
+                /*System.out.println(exits[min]+ " "+ exits[max]);
+                if(exits[min]<1){
+                    GraphIO.printGraph(this);
+                }*/
+                int old = exits[max];
+                reduce(line, min, max);
+
+                if(getEdgeCountWithoutIdentity(line, max)==old){
+                    continu=false;
+                }
+
+                int oldsize = nbVertices();
+                removeLooplessNodes();
+                if(oldsize!=nbVertices()){
+                    continu=false;
+                }
+            }
+            else{
+                continu = false;
+            }
+        }
+        /*if(min!=-1) {
+            for (int i = nbVertices() - 1; i >= 0; i--) {
+                if (exits[i] != 0 && i != min && getEdgeCountWithoutIdentity(line, min)>0) {
+                    System.out.println(line+" "+min+" "+i);
+                    reduce(line, min, i);
+                }
+            }
+        }*/
+    }
+
+
+    /**
+     * Réduit la dst-ième valeur de la line-ième ligne de la matrice du graphe
+     * en appliquant la soustraction des entrée de la min-ième valeur de la ligne
+     * @param line ligne de la matrice
+     * @param min indice de la valeur non nulle minimum sur la ligne
+     * @param dst indice de la valeur à réduire
+     * @return nombre soustraction d'entrées de min sur dst effectués.
+     * @throws InvalidOperationException
+     */
+    public int reduce(int line, int min, int dst) throws InvalidOperationException {
+        int[] minEntries = getEntries(min);
+        int[] dstEntries = getEntries(dst);
+
+        int nb = dstEntries[line] / minEntries[line];
+
+        for(int i = 0; i < nbVertices() && nb > 0; i++) {
+            if(minEntries[i] * nb > dstEntries[i]) {
+                double k = Math.ceil((double)(nb * minEntries[i] - dstEntries[i]) / (dstEntries[line] - minEntries[line] * nb));
+
+                while (k >= Double.MAX_VALUE || (getEdgeCount(i, line) < k && getEdgeCount(line, line) == 0)) {
+                    nb--;
+
+                    if(nb == 0) {
+                        break;
+                    }
+
+                    k = Math.ceil((double)(nb * minEntries[i] - dstEntries[i]) / (dstEntries[line] - minEntries[line] * nb));
+                }
+
+                if(getEdgeCount(i, line) < 1) {
+                    nb = 0;
+                }
+            }
+        }
+
+        if(nb != 0) {
+            for (int i = 0; i < nbVertices(); i++) {
+                if(minEntries[i] * nb > dstEntries[i]) {
+                    double k = Math.ceil((double)(nb * minEntries[i] - dstEntries[i]) / (dstEntries[line] - minEntries[line] * nb));
+
+                    while (k > 0) {
+                        addExits(i, line);
+                        k--;
+                    }
+                }
+            }
+
+            for(int i = 0; i < nb && testSub(dst, min); i++) {
+                subEntries(dst, min);
+            }
+        }
+
+        return nb;
+    }
 }
