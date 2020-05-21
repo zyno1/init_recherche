@@ -27,11 +27,24 @@ import java.io.IOException;
 import java.util.List;
 
 public class GraphBWIO {
+
+    /**
+     * charge un graphe noir/blanc à partir d'un fichier TXT qui contient une matrice d'adjacence.
+     * @param path chemin du fichier à charger
+     * @return une instance de GraphBW qui représente le graphe noir/blanc chargé.
+     * @throws IOException
+     */
     public static GraphBW loadFromFile(String path) throws IOException {
         Graph res = GraphIO.loadFromFile(path);
         return GraphBW.fromGraphUnsafe(res);
     }
 
+    /**
+     * Sauve le graphe noir/blanc g dans un fichier DOT.
+     * @param g une instance de GraphBW
+     * @param path destination
+     * @throws IOException
+     */
     public static void writeToDotFile(GraphBW g, String path) throws IOException {
         BufferedWriter out = new BufferedWriter(new FileWriter(path));
 
@@ -57,6 +70,12 @@ public class GraphBWIO {
         out.close();
     }
 
+    /**
+     * Sauve une liste de graphes noir/blanc gc dans des fichiers DOT dans le répertoire folder.
+     * @param gc liste de graphe noir/blanc
+     * @param folder répertoire cible
+     * @throws IOException
+     */
     public static void writeToDotFiles(List<GraphBW> gc, String folder) throws IOException {
         folder = folder.trim();
         if(folder.charAt(folder.length() - 1) != '/') {
@@ -71,10 +90,20 @@ public class GraphBWIO {
         }
     }
 
+    /**
+     * Sauve le graphe g dans un fichier TXT.
+     * @param g une instance de IGraph
+     * @param path destination
+     * @throws IOException
+     */
     public static void writeToFile(IGraph g, String path) throws IOException {
         GraphIO.writeToFile(g, path);
     }
 
+    /**
+     * affiche la matrice d'adjacence de g sur la sortie standard
+     * @param g une instance de IGraph
+     */
     public static void printGraph(IGraph g) {
         GraphIO.printGraph(g);
     }

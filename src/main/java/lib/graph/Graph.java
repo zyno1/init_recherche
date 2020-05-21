@@ -37,37 +37,84 @@ public class Graph implements IGraph {
         }
     }
 
+    /**
+     *
+     * @return le nombre de sommets
+     */
     public int nbVertices() {
         return nb;
     }
 
+    /**
+     *
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @return le nombre d'arrêtes de i1 vers i2
+     */
     public int getEdgeCount(int i1, int i2) {
         return data.get(i1 * nb + i2);
     }
 
+    /**
+     *
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @return le nombre d'arrêtes de i1 vers i2 dans la graphe sans la matrice identité.
+     */
     private int getEdgeCountWithoutIdentity(int i1, int i2) {
         int res = data.get(i1 * nb + i2);
         if(i1==i2)res--;
         return res;
     }
 
+    /**
+     * Met à jour le nombre de sommets de i1 vers i2
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @param n nouvelle valeur
+     */
     public void setEdgeCount(int i1, int i2, int n) {
         data.set(i1 * nb + i2, n);
     }
 
+    /**
+     * Vérifier qu'il existe une arrête qui va de i1 vers 12
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @return True si il y a une arrête de i1 vers i2 False sinon
+     */
     public boolean hasEdge(int i1, int i2) {
         return getEdgeCount(i1, i2) != 0;
     }
 
+    /**
+     * Ajoute n arrêtes de i1 vers i2
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @param n le nombre d'arrêtes à ajouter
+     */
     public void addEdges(int i1, int i2, int n) {
         int old = getEdgeCount(i1, i2);
         setEdgeCount(i1, i2, old + n);
     }
 
+
+    /**
+     * Ajoute une arrête de i1 vers i2
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     */
     public void addEdge(int i1, int i2) {
         addEdges(i1, i2, 1);
     }
 
+    /**
+     * Supprime n arrêtes de i1 vers i2
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @param n le nombre d'arrêtes à supprimer
+     * @throws InvalidOperationException si n est plus grand que le nombre d'arrêtes initiale de i1 vers i2
+     */
     public void removeEdges(int i1, int i2, int n) throws InvalidOperationException {
         if(getEdgeCount(i1, i2) < n) {
             throw new InvalidOperationException();
@@ -75,10 +122,20 @@ public class Graph implements IGraph {
         addEdges(i1, i2, -1 * n);
     }
 
+    /**
+     * Supprime une arrête de i1 vers i2
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @throws InvalidOperationException si il n'y a pas d'arrête de i1 vers i2 dans le graphe initial
+     */
     public void removeEdge(int i1, int i2) throws InvalidOperationException {
         removeEdges(i1, i2, 1);
     }
 
+    /**
+     * Ajoute un nouveau sommet dans le graphe
+     * @return indice du sommet ajouté
+     */
     public int addNode() {
         data.ensureCapacity((nb + 1) * (nb + 1));
         for(int i = nb; i <= data.size(); i += nb + 1) {
@@ -91,6 +148,11 @@ public class Graph implements IGraph {
         return nb - 1;
     }
 
+
+    /**
+     * Supprime le sommet i
+     * @param i l'indice correspondant à un sommet du graphe
+     */
     public void removeNode(int i) {
         for(int j = 0; j < nb; j++) {
             data.remove(i * nb);
@@ -101,6 +163,12 @@ public class Graph implements IGraph {
         nb--;
     }
 
+    /**
+     * Applique la flow-equivalence sur le sommet i.
+     * Dans cette version de la flow-equivalence le sommet i est étiré sur 2 sommets.
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return indice du nouveau sommet créé par l'opération
+     */
     public int flowEquivalence(int i) {
         int i2 = addNode();
         for(int j = 0; j < nb; j++) {
@@ -117,6 +185,15 @@ public class Graph implements IGraph {
         return i2;
     }
 
+    /**
+     * Applique la flow-equivalence sur les sommets i1 et i2
+     * Dans cette version de la flow-equivalence les deux sommets sont fusionnés en un seul.
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @throws InvalidOperationException si l'opération n'est pas applicable :
+     * Pour pouvoir appliquer l'opération il faut qu'il existe une arrête de i1 vers i2
+     * et que cette arrête soit la seule arrête sortante de i1 et la seul arrête entrante de i2.
+     */
     public void flowEquivalence(int i1, int i2) throws InvalidOperationException {
         //verify i1 exits
         for(int j = 0; j < nb; j++) {
@@ -142,6 +219,11 @@ public class Graph implements IGraph {
         removeNode(i2);
     }
 
+    /**
+     *
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return un tableau res tel que res[j] est égal au nombre d'arrêtes de i vers j.
+     */
     public int[] getExits(int i) {
         int[] res = new int[nb];
 
@@ -152,6 +234,12 @@ public class Graph implements IGraph {
         return res;
     }
 
+    /**
+     *
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return un tableau res tel que res[j] est égal au nombre d'arrêtes de i vers j
+     * dans le graphe sans la matrice identité.
+     */
     private int[] getExitsWithoutIdentity(int i) {
         int[] res = new int[nb];
 
@@ -163,6 +251,11 @@ public class Graph implements IGraph {
         return res;
     }
 
+    /**
+     *
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return un tableau res tel que res[j] est égal au nombre d'arrêtes de j vers i.
+     */
     public int[] getEntries(int i) {
         int [] res = new int[nb];
 
@@ -173,6 +266,12 @@ public class Graph implements IGraph {
         return res;
     }
 
+    /**
+     *
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return un tableau res tel que res[j] est égal au nombre d'arrêtes de j vers i
+     * dans le graphe sans la matrice identité.
+     */
     private int[] getEntriesWithoutIdentity(int i) {
         int [] res = new int[nb];
 
@@ -185,6 +284,14 @@ public class Graph implements IGraph {
         return res;
     }
 
+    /**
+     * Applique la division des entrées sur un sommet :
+     * Crée un nouveau sommet avec les mêmes sorties que i, puis, pour chaque sommet s du graphe,
+     * transfère split[s] arrêtes entrantes de i en provenance de s sur le nouveau sommet
+     * @param i l'indice correspondant à un sommet du graphe
+     * @param split une Collection d'entier correspondant aux entrées à transferer sur le nouveau sommet
+     * @return l'indice du sommet ajouté pour l'opération
+     */
     public int splitEntries(int i, int... split) {
         int i2 = addNode();
 
@@ -210,6 +317,14 @@ public class Graph implements IGraph {
         return i2;
     }
 
+    /**
+     * Applique la division des sorties sur un sommet :
+     * Crée un nouveau sommet avec les mêmes entrées que i, puis, pour chaque sommet s du graphe,
+     * transfère split[s] arrêtes sortantes de i à destination de s sur le nouveau sommet
+     * @param i l'indice correspondant à un sommet du graphe
+     * @param split une Collection d'entier correspondant aux sorties à transferer sur le nouveau sommet
+     * @return l'indice du sommet ajouté pour l'opération
+     */
     public int splitExits(int i, int... split) {
         int i2 = addNode();
 
@@ -235,6 +350,12 @@ public class Graph implements IGraph {
         return i2;
     }
 
+    /**
+     * Fusionne les entrées de i1 et i2 sur un seul sommet
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @throws InvalidOperationException Si i1 et i2 n'ont pas les mêmes sorties.
+     */
     public void mergeEntries(int i1, int i2) throws InvalidOperationException {
         if(i1 > i2) {
             int tmp = i1;
@@ -257,6 +378,12 @@ public class Graph implements IGraph {
         removeNode(i2);
     }
 
+    /**
+     * Fusionne les sorties de i1 et i2 sur un seul sommet
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @throws InvalidOperationException Si i1 et i2 n'ont pas les mêmes entrées.
+     */
     public void mergeExits(int i1, int i2) throws InvalidOperationException {
         if(i1 > i2) {
             int tmp = i1;
@@ -279,6 +406,10 @@ public class Graph implements IGraph {
         removeNode(i2);
     }
 
+    /**
+     *
+     * @return une copie du graphe
+     */
     public Graph clone() {
         Graph g = new Graph(nbVertices());
 
@@ -291,14 +422,29 @@ public class Graph implements IGraph {
         return g;
     }
 
+    /**
+     *
+     * @return un tableau de 0 dont la taille est égale au nombre de sommet dans le graphe
+     */
     private int[] zeros() {
         return zeros(nbVertices());
     }
 
+    /**
+     *
+     * @param nb un entier
+     * @return un tableau de 0 de taille nb
+     */
     private int[] zeros(int nb) {
         return new int[nb];
     }
 
+    /**
+     * Ajoute les sorties de i2 sur i1
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @throws InvalidOperationException si il n'y a pas d'arrête de i2 vers i1
+     */
     public void addExits(int i1, int i2) throws InvalidOperationException {
         int[] i1exit = getExits(i1);
 
@@ -320,6 +466,12 @@ public class Graph implements IGraph {
         mergeExits(i1, p1);
     }
 
+    /**
+     * Ajoute les entrée de i2 sur i1
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @throws InvalidOperationException si il n'y a pas d'arrête de i1 vers i2
+     */
     public void addEntries(int i1, int i2) throws InvalidOperationException {
         int[] i1entries = getEntries(i1);
 
@@ -341,6 +493,12 @@ public class Graph implements IGraph {
         mergeEntries(i1, p2);
     }
 
+    /**
+     * Soustrait les sortie de i2 sur i1
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @throws InvalidOperationException si une des sorties de i2 n'est pas sur i1
+     */
     public void subExits(int i1, int i2) throws InvalidOperationException {
         int[] i1exits = getExits(i1);
         int[] i2exits = getExits(i2);
@@ -358,6 +516,12 @@ public class Graph implements IGraph {
         mergeExits(i1, p1);
     }
 
+    /**
+     * Soustrait les entrées de i2 sur i1
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @throws InvalidOperationException si une des entrée de i2 n'est pas sur i1
+     */
     public void subEntries(int i1, int i2) throws InvalidOperationException {
         int[] i1entries = getEntries(i1);
         int[] i2entries = getEntries(i2);
@@ -375,6 +539,11 @@ public class Graph implements IGraph {
         mergeExits(i2, p1);
     }
 
+    /**
+     * Transforme le graphe en un graphe équivalent où tout les sommets
+     * possèdent au moins une boucle.
+     * @throws InvalidOperationException
+     */
     public void removeLooplessNodes() throws InvalidOperationException {
         for(int j = nbVertices() - 1; j >= 0; j--) {
             if(getEdgeCount(j, j) == 0) {
@@ -399,6 +568,12 @@ public class Graph implements IGraph {
         }
     }
 
+    /**
+     * Vérifie que l'on peut soustraire les entrées de i2 sur i1.
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @return True la soustraction est possible False sinon
+     */
     private boolean testSub(int i1, int i2) {
         for (int j = 0; j < nbVertices(); j++) {
             if(getEdgeCount(j, i1) < getEdgeCount(j, i2)) {
@@ -408,12 +583,21 @@ public class Graph implements IGraph {
         return true;
     }
 
+    /**
+     * Réduit le graphe en forme normale
+     * @throws InvalidOperationException
+     */
     public void reduceAll() throws InvalidOperationException{
         for(int i=nbVertices()-1; i>=0; i--) {
             reduceLine(i);
         }
     }
 
+    /**
+     * réduit une ligne de la matrice du graphe.
+     * @param line ligne à réduire
+     * @throws InvalidOperationException
+     */
     public void reduceLine(int line) throws InvalidOperationException {
         boolean continu = true;
         while(continu) {
@@ -467,6 +651,15 @@ public class Graph implements IGraph {
     }
 
 
+    /**
+     * Réduit la dst-ième valeur de la line-ième ligne de la matrice du graphe
+     * en appliquant la soustraction des entrée de la min-ième valeur de la ligne
+     * @param line ligne de la matrice
+     * @param min indice de la valeur non nulle minimum sur la ligne
+     * @param dst indice de la valeur à réduire
+     * @return nombre soustraction d'entrées de min sur dst effectués.
+     * @throws InvalidOperationException
+     */
     public int reduce(int line, int min, int dst) throws InvalidOperationException {
         int[] minEntries = getEntries(min);
         int[] dstEntries = getEntries(dst);
