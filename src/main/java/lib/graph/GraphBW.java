@@ -26,6 +26,10 @@ public class GraphBW implements IGraph {
     ArrayList<Color> colors;
     int nb;
 
+    /**
+     *
+     * @param n nombre de sommets
+     */
     public GraphBW(int n) {
         nb = n;
         data = new ArrayList<Integer>(n * n);
@@ -40,6 +44,10 @@ public class GraphBW implements IGraph {
         }
     }
 
+    /**
+     *
+     * @return une copie du graphe BW
+     */
     public GraphBW clone() {
         GraphBW g = new GraphBW(nbVertices());
 
@@ -54,10 +62,21 @@ public class GraphBW implements IGraph {
         return g;
     }
 
+    /**
+     *
+     * @param g instance de Graph
+     * @return une instance de GraphBW créée à partir de g
+     */
     public static GraphBW fromGraph(Graph g) {
         return fromGraphUnsafe(g.clone());
     }
 
+    /**
+     * Attention cette méthode modifie g
+     * pour éviter ce problème utiliser <i>fromGraph(Graph g)</i>
+     * @param g instance de Graph
+     * @return une instance de GraphBW créée à partir de g
+     */
     public static GraphBW fromGraphUnsafe(Graph g) {
         int n = g.nbVertices();
 
@@ -82,14 +101,30 @@ public class GraphBW implements IGraph {
         return res;
     }
 
+    /**
+     *
+     * @return le nombre de sommets
+     */
     public int nbVertices() {
         return nb;
     }
 
+    /**
+     *
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @return le nombre d'arrêtes de i1 vers i2
+     */
     public int getEdgeCount(int i1, int i2) {
         return data.get(i1 * nb + i2);
     }
 
+    /**
+     * Met à jour le nombre de sommets de i1 vers i2
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @param n nouvelle valeur
+     */
     public void setEdgeCount(int i1, int i2, int n) throws InvalidOperationException {
         //int[] i1entry = getEntries(i1);
         int[] i1exit = getExits(i1);
@@ -109,10 +144,21 @@ public class GraphBW implements IGraph {
         data.set(i1 * nb + i2, n);
     }
 
+    /**
+     *
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return la couleur du sommet i
+     */
     public Color getColor(int i) {
         return colors.get(i);
     }
 
+    /**
+     * met à jour la couleur du sommet i
+     * @param i l'indice correspondant à un sommet du graphe
+     * @param c nouvelle couleur
+     * @throws InvalidOperationException si la c est incohérent par rapport au entrées et sorties de i
+     */
     public void setColor(int i, Color c) throws InvalidOperationException {
         if(c == Color.Black && Calcul.sum(getEntries(i)) != 1) {
             throw new InvalidOperationException();
@@ -123,11 +169,24 @@ public class GraphBW implements IGraph {
         colors.set(i, c);
     }
 
+    /**
+     * Ajoute n arrêtes de i1 vers i2
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @param n le nombre d'arrêtes à ajouter
+     */
     public void addEdges(int i1, int i2, int n) throws InvalidOperationException {
         int k = getEdgeCount(i1, i2) + n;
         setEdgeCount(i1, i2, k);
     }
 
+    /**
+     * Supprime n arrêtes de i1 vers i2
+     * @param i1 l'indice correspondant à un sommet du graphe
+     * @param i2 l'indice correspondant à un sommet du graphe
+     * @param n le nombre d'arrêtes à supprimer
+     * @throws InvalidOperationException si n est plus grand que le nombre d'arrêtes initiale de i1 vers i2
+     */
     public void removeEdges(int i1, int i2, int n) throws InvalidOperationException {
         int k = getEdgeCount(i1, i2) - n;
         if(k < 0) {
@@ -136,6 +195,11 @@ public class GraphBW implements IGraph {
         setEdgeCount(i1, i2, k);
     }
 
+    /**
+     * Ajoute un sommet dans le graphe de couleur c
+     * @param c une couleur
+     * @return l'indice du sommet ajouté
+     */
     public int addNode(Color c) {
         data.ensureCapacity((nb + 1) * (nb + 1));
         for(int i = nb; i <= data.size(); i += nb + 1) {
@@ -149,6 +213,11 @@ public class GraphBW implements IGraph {
         return nb - 1;
     }
 
+    /**
+     * Ajoute une copie du graph BW dans gc et supprime le sommet i
+     * @param gc liste de GraphBW
+     * @param i l'indice du sommet à supprimer
+     */
     public void removeNode(List<GraphBW> gc, int i) {
         gc.add(this.clone());
 
@@ -162,6 +231,11 @@ public class GraphBW implements IGraph {
         nb--;
     }
 
+    /**
+     *
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return un tableau res tel que res[j] est égal au nombre d'arrêtes de i vers j.
+     */
     public int[] getExits(int i) {
         int[] res = new int[nb];
 
@@ -172,6 +246,11 @@ public class GraphBW implements IGraph {
         return res;
     }
 
+    /**
+     *
+     * @param i l'indice correspondant à un sommet du graphe
+     * @return un tableau res tel que res[j] est égal au nombre d'arrêtes de j vers i.
+     */
     public int[] getEntries(int i) {
         int [] res = new int[nb];
 
@@ -182,6 +261,15 @@ public class GraphBW implements IGraph {
         return res;
     }
 
+    /**
+     * Ajoute une copie du graphe dans gc puis divise le sommet i1 en suivant la règle R2
+     * si le sommet est de couleur <i>Black</i> on divise ses sorties si il est <i>White</i> on divise ses entrée
+     * @param gc liste de GraphBW
+     * @param i1 indice correspondant à un sommet du graphe
+     * @param split masque correspondant aux entrées ou sorties que l'on souhaites transférer de i1 au nouveau sommet
+     * @return l'indice du sommet créé par l'opération
+     * @throws InvalidOperationException si split contient une valeur négative
+     */
     public int split(List<GraphBW> gc, int i1, int... split) throws InvalidOperationException {
     //public int split(int i1, int... split) throws InvalidOperationException {
         gc.add(this.clone());
@@ -235,6 +323,13 @@ public class GraphBW implements IGraph {
         return i2;
     }
 
+    /**
+     * Ajoute une copie du graphe dans gc puis fusionne les sommets i1 et i2 en suivant la règle R2
+     * @param gc liste de GraphBW
+     * @param i1 indice correspondant à un sommet du graphe
+     * @param i2 indice correspondant à un sommet du graphe
+     * @throws InvalidOperationException si les sommets sont de couleurs différentes ou si ils ne sont pas reliés par une arrète
+     */
     public void merge(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(i1 > i2) {
             int tmp = i1;
@@ -288,6 +383,15 @@ public class GraphBW implements IGraph {
         removeNode(gc, i2);
     }
 
+    /**
+     * Ajoute une copie du graphe à gc puis ajoute un sommet entre i1 et i2 du couleur c
+     * @param gc Liste de GraphBW
+     * @param i1 indice d'un sommet du graphe
+     * @param i2 indice d'un sommet du graphe
+     * @param c une couleur
+     * @return l'indice du sommet ajouté
+     * @throws InvalidOperationException si il n'y a pas d'arrête entre i1 et i2
+     */
     public int addNodeOnEdge(List<GraphBW> gc, int i1, int i2, Color c) throws InvalidOperationException {
         int nb = getEdgeCount(i1, i2);
         if(nb < 1) {
@@ -306,6 +410,13 @@ public class GraphBW implements IGraph {
         return i3;
     }
 
+    /**
+     * Ajoute une copie du graphe à gc puis supprime le sommet i
+     * @param gc Liste de GraphBW
+     * @param i indice du sommet à supprimer
+     * @throws InvalidOperationException si le sommet ne peut pas etre supprimé :
+     * un sommet peut être supprimer si il posséde exactement une arrête entrante et une arrête sortante
+     */
     public void removeNodeOnEdge(List<GraphBW> gc, int i) throws InvalidOperationException {
         int[] entries = getEntries(i);
         int[] exits = getExits(i);
@@ -335,6 +446,17 @@ public class GraphBW implements IGraph {
         removeNode(gc, i);
     }
 
+    /**
+     * Ajoute une copie du Graph à gc et applique la règle R3 généralisée sur les sommets i1 et i2
+     * @param gc Liste de GraphBW
+     * @param i1 indice correspondant à un sommet du graphe
+     * @param i2 indice correspondant à un sommet du graphe
+     * @return un tableau à 2 dimension res tel que res [0][i] est l'indice du i-ème sommet noir créé
+     * par l'opération et res[1][j] est l'indice du i-ème sommet blanc créé par l'opération.
+     * @throws InvalidOperationException si on ne peut pas appliquer la règle R3. Pour appliquer R3,
+     * il faut que i1 soit un sommet blanc et i2 un sommet noir et que i1 et i2 soient reliés par une
+     * et une seule arrête.
+     */
     public int[][] r3(List<GraphBW> gc, final int i1, final int i2) throws InvalidOperationException {
         int[] i1exit = getExits(i1);
         int[] i2entries = getEntries(i2);
@@ -401,6 +523,12 @@ public class GraphBW implements IGraph {
         return res;
     }
 
+    /**
+     *
+     * @param i un entier
+     * @param l une collection d'entiers
+     * @return True si i est contenu dans l, False sinon.
+     */
     private boolean contains(int i, int... l) {
         for(int j = 0; j < l.length; j++) {
             if(l[j] == i) {
@@ -410,6 +538,17 @@ public class GraphBW implements IGraph {
         return false;
     }
 
+    /**
+     * Ajoute une copie du graphe dans gc puis applique la règle R3 inverse sur les sommets dans entry et exit.
+     * @param gc Une liste de GraphBW
+     * @param entry indices des sommets noirs
+     * @param exit indices des sommets blancs
+     * @throws InvalidOperationException si une de ces conditions n'est pas respectée :
+     * 1) entry ne contient que des sommets noirs
+     * 2) exit ne contient que des sommets blancs
+     * 3) il y a exactement une arrête de chaque sommet noir vers chaque sommet blanc
+     * 4) il n'y a aucune arrête qui part d'un sommet blanc vers un sommet noir
+     */
     public void r3(List<GraphBW> gc, int[] entry, int[] exit) throws InvalidOperationException {
         for(int ei = 0; ei < nbVertices(); ei++) {
             for(int xi = 0; xi < nbVertices(); xi++) {
@@ -486,6 +625,13 @@ public class GraphBW implements IGraph {
         }
     }
 
+    /**
+     * Ajoute une copie du graphe dans gc puis ajoute les entrées du sommet-frère de i2 sur i1
+     * @param gc Liste de GraphBW
+     * @param i1 l'indice d'un sommet blanc
+     * @param i2 l'indice d'un sommet noir
+     * @throws InvalidOperationException si i1 est noir ou i2 est blanc ou si il n'y a pas d'arrète de i2 vers i1
+     */
     public void addEntries(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(getColor(i1) == Color.Black || getColor(i2) == Color.White || getEdgeCount(i2, i1) < 1) {
             throw new InvalidOperationException();
@@ -501,6 +647,11 @@ public class GraphBW implements IGraph {
         removeSameColorNodes(gc);
     }
 
+    /**
+     *
+     * @param i indice d'un sommet du graphe
+     * @return l'indice du sommet-frère de i
+     */
     public int getBrother(int i) {
         if(getColor(i) == Color.Black) {
             for (int j = 0; j < nbVertices(); j++) {
@@ -519,6 +670,13 @@ public class GraphBW implements IGraph {
         return -1;
     }
 
+    /**
+     * Ajoute une copie du graphe dans gc puis ajoute les sorties du sommet-frère de i2 sur i1
+     * @param gc Liste de GraphBW
+     * @param i1 l'indice d'un sommet noir
+     * @param i2 l'indice d'un sommet blanc
+     * @throws InvalidOperationException si i1 est blanc ou i2 est noir ou si il n'y a pas d'arrète de i1 vers i2
+     */
     public void addExits(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(getColor(i2) == Color.Black || getColor(i1) == Color.White || getEdgeCount(i1, i2) < 1) {
             throw new InvalidOperationException();
@@ -534,10 +692,22 @@ public class GraphBW implements IGraph {
         removeSameColorNodes(gc);
     }
 
+    /**
+     *
+     * @return un tableau de 0 dont la taille est égale au nombre de sommets dans le graphe
+     */
     private int[] zeros() {
         return new int[nbVertices()];
     }
 
+    /**
+     * Ajoute une copie du graphe dans gc puis soustrait les sorties du sommet-frère de i2 sur i1
+     * @param gc Liste de GraphBW
+     * @param i1 indice d'un sommet noir
+     * @param i2 indice d'un sommet blanc
+     * @throws InvalidOperationException si i1 est blanc ou i2 est noir ou encore si l'ensemble des sorties à
+     * enlever ne sont pas toutes présentes sur i1.
+     */
     public void subExits(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(getColor(i1) == Color.White) {
             throw new InvalidOperationException();
@@ -576,6 +746,14 @@ public class GraphBW implements IGraph {
         removeSameColorNodes(gc);
     }
 
+    /**
+     * Ajoute une copie du graphe dans gc puis soustrait les entrées du sommet-frère de i2 sur i1
+     * @param gc Liste de GraphBW
+     * @param i1 indice d'un sommet blanc
+     * @param i2 indice d'un sommet noir
+     * @throws InvalidOperationException si i1 est noir ou i2 est blanc ou encore si l'ensemble des entrées à
+     * enlever ne sont pas toutes présentes sur i1.
+     */
     public void subEntries(List<GraphBW> gc, int i1, int i2) throws InvalidOperationException {
         if(getColor(i1) == Color.Black) {
             throw new InvalidOperationException();
@@ -614,6 +792,12 @@ public class GraphBW implements IGraph {
         removeSameColorNodes(gc);
     }
 
+    /**
+     * Simplifie le graphe en fusionnant des sommets de même couleur
+     * Ajoute chaque étape dans gc.
+     * @param gc Liste de GraphBW
+     * @throws InvalidOperationException
+     */
     public void removeSameColorNodes(List<GraphBW> gc) throws InvalidOperationException {
         for(int i = nbVertices() - 1; i >= 0; i--) {
             for (int j = 0; j < nbVertices(); j++) {
@@ -625,6 +809,12 @@ public class GraphBW implements IGraph {
         }
     }
 
+    /**
+     * Applique l'algorithme de suppression des paire de sommet-frère sans boucle.
+     * Ajoute chaque étape de l'algorithme dans gc.
+     * @param gc Liste de GraphBW
+     * @throws InvalidOperationException
+     */
     public void removeLooplessNodes(List<GraphBW> gc) throws InvalidOperationException {
         for(int j = nbVertices() - 1; j >= 0; j--) {
             int jb = j;

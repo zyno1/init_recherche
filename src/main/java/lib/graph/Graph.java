@@ -28,6 +28,10 @@ public class Graph implements IGraph {
     ArrayList<Integer> data;
     int nb;
 
+    /**
+     *
+     * @param n nombre de sommets
+     */
     public Graph(int n) {
         nb = n;
         data = new ArrayList<Integer>(n * n);
